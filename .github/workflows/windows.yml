@@ -1,0 +1,43 @@
+name: Instalador do Windows
+
+# Roda sozinho a cada envio de código e também quando você clicar em "Run workflow".
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  instalador-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Baixar o código
+        uses: actions/checkout@v4
+
+      - name: Instalar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Instalar o Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Guardar as dependências do Rust (acelera as próximas vezes)
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Instalar os pacotes
+        run: npm install
+
+      - name: Conferir o código (TypeScript)
+        run: npm run typecheck
+
+      - name: Gerar o instalador
+        run: npx tauri build
+
+      - name: Guardar o instalador para download
+        uses: actions/upload-artifact@v4
+        with:
+          name: grimorio-windows
+          path: src-tauri/target/release/bundle/nsis/*.exe
+          if-no-files-found: error

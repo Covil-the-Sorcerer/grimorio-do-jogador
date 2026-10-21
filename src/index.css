@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Tema claro (padrão) ---------- */
+:root {
+  --fundo: #f5f6fa;
+  --superficie: #ffffff;
+  --superficie-2: #eceef5;
+  --texto: #1a1b26;
+  --texto-suave: #5a5d70;
+  --borda: #d9dce8;
+  --destaque: #5b3fd0;
+  --sobre-destaque: #ffffff;
+  --perigo: #b3261e;
+  color-scheme: light;
+}
+
+/* ---------- Tema escuro ---------- */
+[data-theme="dark"] {
+  --fundo: #0e0f15;
+  --superficie: #171923;
+  --superficie-2: #20232f;
+  --texto: #ececf4;
+  --texto-suave: #a0a4b8;
+  --borda: #2c3040;
+  --destaque: #a791f5;
+  --sobre-destaque: #140f26;
+  --perigo: #ff8a80;
+  color-scheme: dark;
+}
+
+/* ---------- Tamanho da letra (vale para o app todo) ---------- */
+html {
+  font-size: 16px;
+}
+html[data-fonte="small"] {
+  font-size: 14.5px;
+}
+html[data-fonte="large"] {
+  font-size: 18.5px;
+}
+
+body {
+  @apply bg-fundo font-sans text-texto antialiased;
+  line-height: 1.5;
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--destaque);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg px-4 py-2 text-base font-semibold;
+    transition: background-color 0.15s, opacity 0.15s;
+  }
+  .btn:disabled {
+    @apply cursor-not-allowed opacity-60;
+  }
+  .btn-primario {
+    @apply bg-destaque text-sobredestaque;
+  }
+  .btn-primario:not(:disabled):hover {
+    opacity: 0.9;
+  }
+  .btn-secundario {
+    @apply border border-borda bg-superficie text-texto;
+  }
+  .btn-secundario:not(:disabled):hover {
+    @apply bg-superficie2;
+  }
+  .cartao {
+    @apply rounded-xl border border-borda bg-superficie;
+  }
+  .link {
+    @apply font-semibold text-destaque underline underline-offset-2;
+  }
+}

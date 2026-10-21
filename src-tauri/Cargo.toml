@@ -1,0 +1,22 @@
+[package]
+name = "grimorio-do-jogador"
+version = "0.1.0"
+description = "Fichas de RPG de mesa, 100% no seu aparelho"
+edition = "2021"
+
+[lib]
+# O nome precisa ser igual ao usado em src/main.rs.
+name = "grimorio_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+
+[profile.release]
+# Programa menor. Não ligamos o "lto" para a compilação na nuvem ficar mais rápida.
+opt-level = "s"
+strip = true
+panic = "abort"

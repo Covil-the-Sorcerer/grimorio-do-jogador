@@ -1,58 +1,49 @@
-# Grimório do Jogador — versão de Windows (Fases 1 e 2)
+# Grimório do Jogador — versão de Windows (0.2: primeiras fichas de D&D 5e)
 
 App para criar, guardar e usar fichas de RPG de mesa, 100% no seu computador (sem conta, sem internet, sem nuvem).
-Esta primeira versão é a **base**: janela do app, menu, tema claro/escuro, tamanho da letra, gravação de arquivos e uma tela de **diagnóstico**. Fichas, dados e regras vêm nas próximas fases.
 
-Você **não precisa instalar nada no seu computador** para gerar o instalador: o GitHub faz isso na nuvem.
+## O que há de novo nesta versão
 
-## O que cada arquivo faz (resumo)
+- **Lista de fichas:** criar, abrir, duplicar e excluir (com confirmação).
+- **Nova ficha:** nome e regras da mesa (versão 2014; multiclasse sim/não). A criação guiada chega depois; por enquanto a ficha começa em branco.
+- **Ficha de D&D 5e em abas:** Informações, Atributos, Perícias, Combate e Anotações.
+- **Cabeçalho fixo** com PV (botões − e + com campo de quantidade), CA e iniciativa.
+- **Cálculos automáticos** pelas regras de D&D 5e (2014): modificadores, bônus de proficiência, resistências, perícias, iniciativa, CA e percepção passiva.
+- **Override:** toque em qualquer número calculado para trocá-lo à mão. Ele fica marcado como "manual", e o botão "Voltar ao automático" desfaz a troca.
+- **Salvamento automático** a cada alteração, em arquivos na pasta de dados do app.
+- **Motor de regras:** as regras de D&D agora são dados lidos por um motor próprio, o que prepara a entrada de outros sistemas. Há testes automáticos (rodam antes de cada compilação).
 
-- `src/` — as telas do app (React).
-- `src-tauri/` — o "embrulho" que transforma o app em programa de Windows e grava os arquivos no seu PC.
-- `.github/workflows/windows.yml` — a receita que o GitHub segue para montar o instalador.
+Ainda **não** existe: rolagem de dados, criação guiada, magias, inventário, listas de raças e classes, exportar/importar ficha e cópia de segurança.
 
-## Passo a passo
+## Como atualizar o app
 
-### 1. Criar a conta e o repositório no GitHub
-1. Crie uma conta gratuita em https://github.com.
-2. Clique em **New repository** (botão verde, ou o **+** no topo).
-3. Nome: `grimorio-do-jogador`. Marque **Public** (repositório público não gasta a cota gratuita de compilação; confirme os limites atuais na página do GitHub se preferir deixar privado).
-4. Clique em **Create repository**. Não marque nenhuma opção de README.
+1. Descompacte o zip e abra a pasta `grimorio-app`.
+2. No repositório do GitHub, clique em **Add file > Upload files**.
+3. Arraste o **conteúdo** da pasta `grimorio-app` (as pastas `public`, `src`, `src-tauri`, `tests` e os arquivos soltos). O GitHub substitui os arquivos de mesmo nome. Você **não** precisa mexer na pasta `.github`: o arquivo `windows.yml` que você já criou continua valendo.
+4. Clique em **Commit changes**. A compilação começa sozinha (aba **Actions**).
+5. Quando ficar verde, baixe o `grimorio-windows` em **Artifacts**, extraia e rode o instalador **por cima** da versão antiga. Suas configurações e fichas continuam.
 
-### 2. Enviar o projeto
-1. Descompacte o zip. Dentro dele há uma pasta `grimorio-app`.
-2. Na página do repositório recém-criado, clique em **uploading an existing file** (ou **Add file > Upload files**).
-3. Abra a pasta `grimorio-app` e **arraste o CONTEÚDO dela** (as pastas `.github`, `public`, `src`, `src-tauri` e os arquivos soltos) para a janela do GitHub. Não arraste a pasta `grimorio-app` em si.
-4. Espere terminar de carregar e clique em **Commit changes**.
+## O que testar
 
-Confira no repositório: devem aparecer as pastas `.github`, `public`, `src`, `src-tauri` e arquivos como `package.json` e `index.html`. Se `.github` não aparecer, envie-a de novo (ela é essencial).
+1. **Criar uma ficha:** Fichas > Nova ficha > digite um nome, deixe a versão 2014 e crie. Ela abre sozinha.
+2. **Atributos:** na aba Atributos, mude a Destreza para 16: o modificador deve virar +3, e a CA e a iniciativa (no cabeçalho) acompanham.
+3. **Perícias:** toque no círculo de uma perícia: sem proficiência (○), proficiente (●) e especialista (◆). O número deve mudar (nível 1: bônus +2; especialista soma o dobro).
+4. **Override:** na aba Combate, toque no valor da CA, digite 18 e confirme com Enter. Ele fica marcado "manual". Toque em "Voltar ao automático" e ele volta ao valor calculado.
+5. **PV:** no cabeçalho, digite uma quantidade e use − e +. Com PV temporários (aba Combate), o dano gasta primeiro os temporários. A cura não passa do máximo.
+6. **Salvamento:** olhe o aviso "Salvo" no cabeçalho. Feche o app, abra de novo e confira que tudo continua.
+7. **Lista:** volte para Fichas, duplique a ficha, abra a cópia e depois exclua uma delas.
+8. **Janela estreita:** diminua a janela até virar "celular" e veja se as abas e o cabeçalho continuam utilizáveis.
+9. **Tema e letra grande:** troque o tema e o tamanho da letra e confira a ficha.
 
-### 3. Gerar o instalador
-1. Clique na aba **Actions** do repositório. Se aparecer um botão de habilitar, habilite.
-2. O envio do passo 2 já inicia a compilação sozinho ("Instalador do Windows"). Se não iniciar, escolha o fluxo na lateral e clique em **Run workflow**.
-3. Espere. A **primeira vez demora** (de 10 a 25 minutos, aproximadamente), porque baixa e compila muita coisa. As próximas são mais rápidas.
-4. Um **círculo verde** é sucesso. Um **X vermelho** é erro (veja o passo 6).
+## Se der erro
 
-### 4. Baixar e instalar
-1. Clique na compilação concluída e, no fim da página, em **Artifacts**, baixe **grimorio-windows** (vem em um zip).
-2. Extraia o zip: dentro há o instalador `.exe`.
-3. Ao abrir, o Windows pode mostrar "O Windows protegeu seu computador". Clique em **Mais informações** e depois em **Executar assim mesmo**. Isso acontece porque o instalador não tem assinatura paga.
-4. O instalador é por usuário (não pede senha de administrador).
-
-### 5. O que testar
-1. O app abre numa janela, com menu lateral (Fichas, Homebrew, Configurações).
-2. O botão de sol/lua do topo troca o tema; em Configurações, o tema e o tamanho da letra também mudam, e os dois se mantêm iguais entre si.
-3. Feche e abra o app: tema e tamanho da letra devem continuar.
-4. **Configurações > Abrir diagnóstico > Testar gravação de arquivos**: deve aparecer "Gravação e leitura funcionando", e a **pasta dos dados** deve aparecer (algo como `C:\Users\SEU-NOME\AppData\Roaming\com.grimorio.jogador`).
-5. Diminua a janela até ficar estreita (como um celular): o menu vira uma gaveta, aberta pelo botão de três traços.
-6. Para reinstalar uma versão nova, rode o instalador novo por cima: os dados continuam.
-
-### 6. Se der erro
-- **Erro na compilação (X vermelho):** abra a compilação, clique no passo que falhou (marcado em vermelho), copie o texto do erro e me envie. O primeiro envio provavelmente precisará de ajustes, porque este projeto ainda não foi compilado de verdade.
-- **Erro dentro do app:** abra Configurações > Abrir diagnóstico, clique em **Copiar relatório** e envie o texto.
-- **Tela em branco ao abrir o app:** me avise com um print.
+- **Erro na compilação (X vermelho):** abra a compilação, clique no passo que falhou, copie o texto do erro e me envie. Se falhar em "Gerar o instalador" logo no começo, o texto mostrará se foi um dos **testes** ou outra coisa.
+- **Erro dentro do app:** Configurações > Abrir diagnóstico > Copiar relatório.
+- **Uma ficha que não abre:** o diagnóstico mostra o motivo. O arquivo da ficha fica na pasta de dados (o caminho aparece no diagnóstico), dentro de `fichas`.
 
 ## Observações
-- Os dados ficam em arquivos na pasta mostrada no diagnóstico. Fazer cópia dessa pasta já é uma cópia de segurança (o botão de backup dentro do app chega em uma próxima fase).
-- Não mude o identificador `com.grimorio.jogador` (em `src-tauri/tauri.conf.json`): ele define onde os dados ficam e, se mudar, o app não encontra mais as fichas antigas.
+
+- Os dados ficam em arquivos na pasta mostrada no diagnóstico. Copiar a pasta `fichas` já é uma cópia de segurança (o botão de backup dentro do app chega depois).
+- Não mude o identificador `com.grimorio.jogador` em `src-tauri/tauri.conf.json`: ele define onde os dados ficam.
+- As abas estão em uma barra no topo da ficha. O botão flutuante com grade, previsto no desenho original, pode ser feito depois se você preferir.
 - O Android entra depois que o Windows estiver funcionando bem.

@@ -6,9 +6,9 @@ import { VERSAO_DO_APP } from "../versao";
 import { t } from "../i18n/pt-BR";
 
 const LINKS = [
-  { to: "/fichas", rotulo: t.menu.fichas },
-  { to: "/homebrew", rotulo: t.menu.homebrew },
-  { to: "/configuracoes", rotulo: t.menu.configuracoes },
+  { to: "/fichas", prefixos: ["/fichas", "/ficha/"], rotulo: t.menu.fichas },
+  { to: "/homebrew", prefixos: ["/homebrew"], rotulo: t.menu.homebrew },
+  { to: "/configuracoes", prefixos: ["/configuracoes", "/diagnostico"], rotulo: t.menu.configuracoes },
 ];
 
 const TELA_LARGA = "(min-width: 1024px)";
@@ -87,7 +87,7 @@ export function AppShell() {
         <nav className="flex-1 overflow-y-auto p-2" aria-label={t.menu.principal}>
           <ul className="space-y-1">
             {LINKS.map((item) => {
-              const ativo = pathname === item.to || pathname.startsWith(`${item.to}/`);
+              const ativo = item.prefixos.some((prefixo) => pathname.startsWith(prefixo));
               return (
                 <li key={item.to}>
                   <Link
@@ -109,7 +109,7 @@ export function AppShell() {
       </aside>
 
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-borda bg-superficie px-3 py-2">
+        <header className="sticky top-0 z-30 flex h-[var(--altura-topo)] items-center gap-3 border-b border-borda bg-superficie px-3">
           <button
             type="button"
             onClick={() => setAberto(true)}

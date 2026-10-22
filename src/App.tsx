@@ -2,6 +2,7 @@ import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
 import { Configuracoes } from "./pages/Configuracoes";
 import { Diagnostico } from "./pages/Diagnostico";
+import { FichaPagina } from "./pages/FichaPagina";
 import { Fichas } from "./pages/Fichas";
 import { Homebrew } from "./pages/Homebrew";
 
@@ -12,6 +13,7 @@ export function App() {
       <Routes>
         <Route element={<AppShell />}>
           <Route path="/fichas" element={<Fichas />} />
+          <Route path="/ficha/:id" element={<FichaPagina />} />
           <Route path="/homebrew" element={<Homebrew />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/diagnostico" element={<Diagnostico />} />

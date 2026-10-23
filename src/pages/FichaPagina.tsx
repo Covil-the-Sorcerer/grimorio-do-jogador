@@ -3,21 +3,26 @@ import { Link, useParams } from "react-router-dom";
 import { AbaAnotacoes } from "../components/ficha/AbaAnotacoes";
 import { AbaAtributos } from "../components/ficha/AbaAtributos";
 import { AbaCombate } from "../components/ficha/AbaCombate";
+import { AbaHabilidades } from "../components/ficha/AbaHabilidades";
 import { AbaInformacoes } from "../components/ficha/AbaInformacoes";
+import { AbaPersonagem } from "../components/ficha/AbaPersonagem";
 import { AbaPericias } from "../components/ficha/AbaPericias";
 import { Cabecalho } from "../components/ficha/Cabecalho";
 import { calcularTudo } from "../engine/rules/calcular";
 import { useFicha } from "../lib/useFicha";
+import { useRetrato } from "../lib/useRetrato";
 import { dnd5e2014 } from "../systems/dnd5e/2014/definicao";
 import { t } from "../i18n/pt-BR";
 
-type Aba = "info" | "atributos" | "pericias" | "combate" | "anotacoes";
+type Aba = "info" | "personagem" | "atributos" | "pericias" | "combate" | "habilidades" | "anotacoes";
 
 const ABAS: { id: Aba; rotulo: string }[] = [
   { id: "info", rotulo: t.ficha.abaInfo },
+  { id: "personagem", rotulo: t.ficha.abaPersonagem },
   { id: "atributos", rotulo: t.ficha.abaAtributos },
   { id: "pericias", rotulo: t.ficha.abaPericias },
   { id: "combate", rotulo: t.ficha.abaCombate },
+  { id: "habilidades", rotulo: t.ficha.abaHabilidades },
   { id: "anotacoes", rotulo: t.ficha.abaAnotacoes },
 ];
 
@@ -25,6 +30,7 @@ export function FichaPagina() {
   const { id } = useParams<{ id: string }>();
   const { ficha, carregando, erro, salvamento, atualizar } = useFicha(id);
   const [aba, setAba] = useState<Aba>("combate");
+  const retrato = useRetrato(ficha?.id, ficha?.temRetrato);
 
   // Recalcula todos os valores das regras sempre que os dados da ficha mudam.
   const calculo = useMemo(() => {
@@ -74,7 +80,7 @@ export function FichaPagina() {
 
   return (
     <section>
-      <Cabecalho {...propriedades} salvamento={salvamento} />
+      <Cabecalho {...propriedades} salvamento={salvamento} retratoUrl={retrato.url} />
 
       <div
         role="tablist"
@@ -99,9 +105,11 @@ export function FichaPagina() {
 
       <div id="painel-ficha" role="tabpanel" aria-labelledby={`aba-${aba}`} className="pt-4">
         {aba === "info" && <AbaInformacoes {...propriedades} />}
+        {aba === "personagem" && <AbaPersonagem {...propriedades} retrato={retrato} />}
         {aba === "atributos" && <AbaAtributos {...propriedades} />}
         {aba === "pericias" && <AbaPericias {...propriedades} />}
         {aba === "combate" && <AbaCombate {...propriedades} />}
+        {aba === "habilidades" && <AbaHabilidades {...propriedades} />}
         {aba === "anotacoes" && <AbaAnotacoes {...propriedades} />}
       </div>
     </section>

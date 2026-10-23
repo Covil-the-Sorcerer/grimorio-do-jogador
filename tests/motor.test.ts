@@ -225,3 +225,64 @@ test("ficha: validação de identificação", () => {
   assert.equal(idValido("a/b"), false);
   assert.equal(idValido("curto"), false);
 });
+
+// ---------- Aba Personagem / Habilidades e proficiências ----------
+test("ficha: campos novos existem em fichas em branco", () => {
+  const f = criarFichaVazia({ nome: "Aria", versaoRegras: "2014", multiclasse: false });
+  assert.equal(f.temRetrato, false);
+  assert.equal(f.dados.personagem.historia, "");
+  assert.deepEqual(f.dados.outrasProficiencias, { armas: [], armaduras: [], ferramentas: [] });
+  assert.deepEqual(f.dados.idiomas, []);
+  assert.deepEqual(f.dados.habilidades, []);
+});
+
+test("ficha: fichas antigas (sem os campos novos) continuam abrindo", () => {
+  const lida = normalizarFicha({ nome: "Antiga", dados: { nivel: 3 } }, "abcdef123456");
+  assert.equal(lida.temRetrato, false);
+  assert.equal(lida.dados.personagem.tesouros, "");
+  assert.deepEqual(lida.dados.idiomas, []);
+  assert.deepEqual(lida.dados.habilidades, []);
+});
+
+test("ficha: listas de proficiências e idiomas são limpas", () => {
+  const lida = normalizarFicha(
+    {
+      dados: {
+        idiomas: ["Comum", " comum ", "", "Élfico", 7, null],
+        outrasProficiencias: { armas: ["Espadas longas", "espadas longas"], armaduras: "x", ferramentas: ["Alaúde"] },
+      },
+    },
+    "abcdef123456",
+  );
+  assert.deepEqual(lida.dados.idiomas, ["Comum", "Élfico"]);
+  assert.deepEqual(lida.dados.outrasProficiencias.armas, ["Espadas longas"]);
+  assert.deepEqual(lida.dados.outrasProficiencias.armaduras, []);
+  assert.deepEqual(lida.dados.outrasProficiencias.ferramentas, ["Alaúde"]);
+});
+
+test("ficha: habilidades recebem identificação e textos válidos", () => {
+  const lida = normalizarFicha(
+    {
+      dados: {
+        habilidades: [
+          { id: "h1", nome: "Visão no Escuro", origem: "Raça", descricao: "Enxerga no escuro." },
+          { id: "h1", nome: "Repetida" },
+          { nome: 5 },
+          "texto solto",
+          null,
+        ],
+      },
+    },
+    "abcdef123456",
+  );
+  assert.equal(lida.dados.habilidades.length, 3);
+  assert.equal(lida.dados.habilidades[0].nome, "Visão no Escuro");
+  assert.equal(lida.dados.habilidades[2].nome, "");
+  const ids = new Set(lida.dados.habilidades.map((h) => h.id));
+  assert.equal(ids.size, 3, "identificações precisam ser únicas");
+});
+
+test("ficha: temRetrato só vale se for verdadeiro de fato", () => {
+  assert.equal(normalizarFicha({ temRetrato: true }, "abcdef123456").temRetrato, true);
+  assert.equal(normalizarFicha({ temRetrato: "sim" }, "abcdef123456").temRetrato, false);
+});

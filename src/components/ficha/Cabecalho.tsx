@@ -19,7 +19,8 @@ export function Cabecalho({
   calc,
   atualizar,
   salvamento,
-}: PropsAba & { salvamento: EstadoSalvamento }) {
+  retratoUrl,
+}: PropsAba & { salvamento: EstadoSalvamento; retratoUrl: string | null }) {
   const [quantidade, setQuantidade] = useState(1);
   const { vida, nivel, classe } = ficha.dados;
   const ca = calc.ca;
@@ -28,15 +29,20 @@ export function Cabecalho({
   return (
     <header className="sticky top-[var(--altura-topo)] z-20 -mx-4 border-b border-borda bg-fundo px-4 pb-3 pt-2">
       <div className="mb-2 flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <Link to="/fichas" className="text-sm font-semibold text-destaque underline underline-offset-2">
-            {t.ficha.voltarLista}
-          </Link>
-          <h1 className="truncate text-xl font-bold">{ficha.nome}</h1>
-          <p className="truncate text-sm text-suave">
-            {t.fichas.nivel} {nivel}
-            {classe ? ` · ${classe}` : ""}
-          </p>
+        <div className="flex min-w-0 items-center gap-3">
+          {retratoUrl && (
+            <img src={retratoUrl} alt="" className="h-14 w-14 shrink-0 rounded-lg border border-borda object-cover" />
+          )}
+          <div className="min-w-0">
+            <Link to="/fichas" className="text-sm font-semibold text-destaque underline underline-offset-2">
+              {t.ficha.voltarLista}
+            </Link>
+            <h1 className="truncate text-xl font-bold">{ficha.nome}</h1>
+            <p className="truncate text-sm text-suave">
+              {t.fichas.nivel} {nivel}
+              {classe ? ` · ${classe}` : ""}
+            </p>
+          </div>
         </div>
         <span
           role="status"

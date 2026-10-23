@@ -26,5 +26,18 @@ export function dadosVazios(): DadosDnd5e {
     vida: { atual: 10, maximo: 10, temporario: 0 },
     deslocamento: 9,
     anotacoes: "",
+    personagem: {
+      tracosPersonalidade: "",
+      ideais: "",
+      vinculos: "",
+      fraquezas: "",
+      historia: "",
+      caracteristicasFisicas: "",
+      aliadosOrganizacoes: "",
+      tesouros: "",
+    },
+    outrasProficiencias: { armas: [], armaduras: [], ferramentas: [] },
+    idiomas: [],
+    habilidades: [],
   };
 }

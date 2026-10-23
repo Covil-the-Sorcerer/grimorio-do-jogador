@@ -5,6 +5,31 @@ export interface Vida {
   temporario: number;
 }
 
+export interface Habilidade {
+  id: string;
+  nome: string;
+  /** De onde vem a habilidade: classe, raça, talento, antecedente... */
+  origem: string;
+  descricao: string;
+}
+
+export interface TextosPersonagem {
+  tracosPersonalidade: string;
+  ideais: string;
+  vinculos: string;
+  fraquezas: string;
+  historia: string;
+  caracteristicasFisicas: string;
+  aliadosOrganizacoes: string;
+  tesouros: string;
+}
+
+export interface OutrasProficiencias {
+  armas: string[];
+  armaduras: string[];
+  ferramentas: string[];
+}
+
 export interface DadosDnd5e {
   jogador: string;
   raca: string;
@@ -25,4 +50,9 @@ export interface DadosDnd5e {
   /** Deslocamento em metros. */
   deslocamento: number;
   anotacoes: string;
+  personagem: TextosPersonagem;
+  /** Proficiências com armas, armaduras (e escudos) e ferramentas (e instrumentos). */
+  outrasProficiencias: OutrasProficiencias;
+  idiomas: string[];
+  habilidades: Habilidade[];
 }

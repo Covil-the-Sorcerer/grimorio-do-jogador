@@ -1,6 +1,6 @@
 import { dnd5e2014 } from "../systems/dnd5e/2014/definicao";
 import { dadosVazios } from "../systems/dnd5e/2014/dados";
-import type { DadosDnd5e } from "../systems/dnd5e/2014/tipos";
+import type { DadosDnd5e, Habilidade } from "../systems/dnd5e/2014/tipos";
 
 export const SCHEMA_ATUAL = 1;
 
@@ -13,6 +13,8 @@ export interface Ficha {
   schemaVersion: number;
   criadaEm: string;
   atualizadaEm: string;
+  /** Há uma imagem de perfil guardada em retratos/{id}.txt. */
+  temRetrato: boolean;
   dados: DadosDnd5e;
 }
 
@@ -44,6 +46,7 @@ export function criarFichaVazia(opcoes: OpcoesNovaFicha): Ficha {
     schemaVersion: SCHEMA_ATUAL,
     criadaEm: agora,
     atualizadaEm: agora,
+    temRetrato: false,
     dados: dadosVazios(),
   };
 }
@@ -65,6 +68,48 @@ function registro(valor: unknown): Record<string, unknown> {
   return typeof valor === "object" && valor !== null && !Array.isArray(valor)
     ? (valor as Record<string, unknown>)
     : {};
+}
+
+const MAXIMO_ITENS_LISTA = 200;
+const MAXIMO_HABILIDADES = 500;
+
+// Lista de textos curtos (proficiências, idiomas): sem vazios, sem repetidos (ignorando maiúsculas).
+function listaDeTextos(valor: unknown): string[] {
+  if (!Array.isArray(valor)) return [];
+  const saida: string[] = [];
+  const vistos = new Set<string>();
+  for (const item of valor) {
+    if (typeof item !== "string") continue;
+    const limpo = item.trim().slice(0, 100);
+    if (!limpo) continue;
+    const chave = limpo.toLowerCase();
+    if (vistos.has(chave)) continue;
+    vistos.add(chave);
+    saida.push(limpo);
+    if (saida.length >= MAXIMO_ITENS_LISTA) break;
+  }
+  return saida;
+}
+
+function listaDeHabilidades(valor: unknown): Habilidade[] {
+  if (!Array.isArray(valor)) return [];
+  const saida: Habilidade[] = [];
+  const ids = new Set<string>();
+  for (const item of valor) {
+    if (typeof item !== "object" || item === null || Array.isArray(item)) continue;
+    const r = item as Record<string, unknown>;
+    let id = texto(r.id, "");
+    if (!id || ids.has(id)) id = novoId();
+    ids.add(id);
+    saida.push({
+      id,
+      nome: texto(r.nome, ""),
+      origem: texto(r.origem, ""),
+      descricao: texto(r.descricao, ""),
+    });
+    if (saida.length >= MAXIMO_HABILIDADES) break;
+  }
+  return saida;
 }
 
 /** Converte o conteúdo lido de um arquivo em uma ficha válida. Lança erro se não for uma ficha. */
@@ -99,6 +144,8 @@ export function normalizarFicha(bruto: unknown, idDoArquivo: string): Ficha {
   }
 
   const vida = registro(d.vida);
+  const pers = registro(d.personagem);
+  const outras = registro(d.outrasProficiencias);
 
   return {
     id: idDoArquivo,
@@ -109,6 +156,7 @@ export function normalizarFicha(bruto: unknown, idDoArquivo: string): Ficha {
     schemaVersion: SCHEMA_ATUAL,
     criadaEm: texto(f.criadaEm, agora),
     atualizadaEm: texto(f.atualizadaEm, agora),
+    temRetrato: f.temRetrato === true,
     dados: {
       jogador: texto(d.jogador, ""),
       raca: texto(d.raca, ""),
@@ -126,6 +174,23 @@ export function normalizarFicha(bruto: unknown, idDoArquivo: string): Ficha {
       },
       deslocamento: numero(d.deslocamento, padrao.deslocamento, 0, 999),
       anotacoes: texto(d.anotacoes, ""),
+      personagem: {
+        tracosPersonalidade: texto(pers.tracosPersonalidade, ""),
+        ideais: texto(pers.ideais, ""),
+        vinculos: texto(pers.vinculos, ""),
+        fraquezas: texto(pers.fraquezas, ""),
+        historia: texto(pers.historia, ""),
+        caracteristicasFisicas: texto(pers.caracteristicasFisicas, ""),
+        aliadosOrganizacoes: texto(pers.aliadosOrganizacoes, ""),
+        tesouros: texto(pers.tesouros, ""),
+      },
+      outrasProficiencias: {
+        armas: listaDeTextos(outras.armas),
+        armaduras: listaDeTextos(outras.armaduras),
+        ferramentas: listaDeTextos(outras.ferramentas),
+      },
+      idiomas: listaDeTextos(d.idiomas),
+      habilidades: listaDeHabilidades(d.habilidades),
     },
   };
 }

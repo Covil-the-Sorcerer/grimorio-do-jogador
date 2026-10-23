@@ -1,17 +1,16 @@
-# Grimório do Jogador — versão de Windows (0.2: primeiras fichas de D&D 5e)
+# Grimório do Jogador — versão de Windows (0.3: abas Personagem e Habilidades)
 
 App para criar, guardar e usar fichas de RPG de mesa, 100% no seu computador (sem conta, sem internet, sem nuvem).
 
 ## O que há de novo nesta versão
 
-- **Lista de fichas:** criar, abrir, duplicar e excluir (com confirmação).
-- **Nova ficha:** nome e regras da mesa (versão 2014; multiclasse sim/não). A criação guiada chega depois; por enquanto a ficha começa em branco.
-- **Ficha de D&D 5e em abas:** Informações, Atributos, Perícias, Combate e Anotações.
-- **Cabeçalho fixo** com PV (botões − e + com campo de quantidade), CA e iniciativa.
-- **Cálculos automáticos** pelas regras de D&D 5e (2014): modificadores, bônus de proficiência, resistências, perícias, iniciativa, CA e percepção passiva.
-- **Override:** toque em qualquer número calculado para trocá-lo à mão. Ele fica marcado como "manual", e o botão "Voltar ao automático" desfaz a troca.
-- **Salvamento automático** a cada alteração, em arquivos na pasta de dados do app.
-- **Motor de regras:** as regras de D&D agora são dados lidos por um motor próprio, o que prepara a entrada de outros sistemas. Há testes automáticos (rodam antes de cada compilação).
+- **Aba "Personagem":** campos de texto para traços de personalidade, ideais, vínculos, fraquezas, história, características físicas, aliados e organizações e tesouros, mais a **imagem de perfil** do personagem.
+- **Imagem de perfil:** você escolhe um arquivo (JPG, PNG ou WebP); o app recorta em quadrado, reduz e guarda no aparelho. Ela aparece no topo da ficha e no card da lista. Duplicar uma ficha copia a imagem, e excluir a ficha apaga a imagem.
+- **Aba "Habilidades e proficiências":** listas para **armas**, **armaduras e escudos**, **ferramentas e instrumentos** e **idiomas** (digite e aperte Enter para adicionar; toque no × para remover) e **cartões de habilidades** (nome, origem e descrição), com confirmação ao remover.
+- **Ordem das abas:** Informações, Personagem, Atributos, Perícias, Combate, Habilidades e proficiências, Anotações.
+- A opção de **especialista** nas perícias continua como estava. Quando entrar a criação guiada, ela ficará disponível só para Bardo e Ladino.
+- **Mais testes automáticos** do motor de regras e da leitura de fichas (agora 25).
+- Fichas criadas na versão anterior continuam abrindo normalmente; os campos novos começam vazios.
 
 Ainda **não** existe: rolagem de dados, criação guiada, magias, inventário, listas de raças e classes, exportar/importar ficha e cópia de segurança.
 
@@ -25,20 +24,21 @@ Ainda **não** existe: rolagem de dados, criação guiada, magias, inventário, 
 
 ## O que testar
 
-1. **Criar uma ficha:** Fichas > Nova ficha > digite um nome, deixe a versão 2014 e crie. Ela abre sozinha.
-2. **Atributos:** na aba Atributos, mude a Destreza para 16: o modificador deve virar +3, e a CA e a iniciativa (no cabeçalho) acompanham.
-3. **Perícias:** toque no círculo de uma perícia: sem proficiência (○), proficiente (●) e especialista (◆). O número deve mudar (nível 1: bônus +2; especialista soma o dobro).
-4. **Override:** na aba Combate, toque no valor da CA, digite 18 e confirme com Enter. Ele fica marcado "manual". Toque em "Voltar ao automático" e ele volta ao valor calculado.
-5. **PV:** no cabeçalho, digite uma quantidade e use − e +. Com PV temporários (aba Combate), o dano gasta primeiro os temporários. A cura não passa do máximo.
-6. **Salvamento:** olhe o aviso "Salvo" no cabeçalho. Feche o app, abra de novo e confira que tudo continua.
-7. **Lista:** volte para Fichas, duplique a ficha, abra a cópia e depois exclua uma delas.
-8. **Janela estreita:** diminua a janela até virar "celular" e veja se as abas e o cabeçalho continuam utilizáveis.
-9. **Tema e letra grande:** troque o tema e o tamanho da letra e confira a ficha.
+1. **Atualização:** depois de instalar por cima, suas fichas antigas devem abrir normalmente e ter as abas novas.
+2. **Aba Personagem:** escreva um texto em cada campo (inclusive uma história longa). Feche e abra o app e confira que tudo ficou salvo.
+3. **Imagem de perfil:** em Personagem, toque em **Escolher imagem** e escolha uma foto. Ela deve aparecer ali, no topo da ficha e no card da lista de fichas. Teste também **Trocar imagem** e **Remover imagem**.
+4. **Imagens difíceis:** tente uma foto grande (de celular), um PNG com fundo transparente e um arquivo que não seja imagem (deve aparecer uma mensagem de erro clara, sem travar).
+5. **Duplicar e excluir:** duplique uma ficha com imagem (a cópia deve ter a mesma imagem) e exclua uma delas.
+6. **Aba Habilidades e proficiências:** adicione armas, armaduras, ferramentas e idiomas pelo campo + Enter. Tente repetir um item (não deve duplicar) e remover com o ×.
+7. **Cartões de habilidades:** adicione uma habilidade, preencha nome, origem e descrição, e depois remova (deve pedir confirmação).
+8. **Abas em janela estreita:** diminua a janela e veja se a barra de abas rola para o lado e se tudo continua utilizável.
+9. **Sem regressão:** confira que atributos, perícias, override, PV e salvamento continuam funcionando.
 
 ## Se der erro
 
 - **Erro na compilação (X vermelho):** abra a compilação, clique no passo que falhou, copie o texto do erro e me envie. Se falhar em "Gerar o instalador" logo no começo, o texto mostrará se foi um dos **testes** ou outra coisa.
 - **Erro dentro do app:** Configurações > Abrir diagnóstico > Copiar relatório.
+- **Imagem que não carrega:** o diagnóstico mostra a mensagem. O arquivo da imagem fica na pasta `retratos`, dentro da pasta de dados.
 - **Uma ficha que não abre:** o diagnóstico mostra o motivo. O arquivo da ficha fica na pasta de dados (o caminho aparece no diagnóstico), dentro de `fichas`.
 
 ## Observações

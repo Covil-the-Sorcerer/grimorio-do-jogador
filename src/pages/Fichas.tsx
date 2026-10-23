@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Modal } from "../components/Modal";
+import { useRetrato } from "../lib/useRetrato";
 import {
   criarFicha,
   duplicarFicha,
@@ -107,12 +108,7 @@ export function Fichas() {
           {lista.fichas.map((ficha) => (
             <li key={ficha.id} className="cartao flex flex-col gap-3 p-4">
               <div className="flex items-center gap-3">
-                <span
-                  className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-destaque text-2xl font-bold text-sobredestaque"
-                  aria-hidden="true"
-                >
-                  {(ficha.nome.trim().charAt(0) || "?").toUpperCase()}
-                </span>
+                <Miniatura ficha={ficha} />
                 <div className="min-w-0">
                   <h2 className="truncate text-lg font-bold">{ficha.nome}</h2>
                   <p className="truncate text-sm text-suave">
@@ -259,5 +255,27 @@ function NovaFichaModal({
         </div>
       </form>
     </Modal>
+  );
+}
+
+// Imagem de perfil no card; sem imagem, mostra a inicial do nome.
+function Miniatura({ ficha }: { ficha: ResumoFicha }) {
+  const retrato = useRetrato(ficha.id, ficha.temRetrato);
+  if (retrato.url) {
+    return (
+      <img
+        src={retrato.url}
+        alt=""
+        className="h-14 w-14 shrink-0 rounded-lg border border-borda object-cover"
+      />
+    );
+  }
+  return (
+    <span
+      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-destaque text-2xl font-bold text-sobredestaque"
+      aria-hidden="true"
+    >
+      {(ficha.nome.trim().charAt(0) || "?").toUpperCase()}
+    </span>
   );
 }

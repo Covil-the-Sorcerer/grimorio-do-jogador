@@ -8,6 +8,7 @@ import {
   type Ficha,
   type OpcoesNovaFicha,
 } from "./ficha";
+import { lerRetrato, removerRetrato, salvarRetrato } from "./retratos";
 
 const PASTA = "fichas";
 
@@ -17,6 +18,7 @@ export interface ResumoFicha {
   classe: string;
   nivel: number;
   atualizadaEm: string;
+  temRetrato: boolean;
 }
 
 export interface ListaFichas {
@@ -49,6 +51,7 @@ export async function listarFichas(): Promise<ListaFichas> {
         classe: ficha.dados.classe,
         nivel: ficha.dados.nivel,
         atualizadaEm: ficha.atualizadaEm,
+        temRetrato: ficha.temRetrato,
       });
     } catch (erro) {
       registrarErro("listar-fichas", new Error(`${nome}: ${erro instanceof Error ? erro.message : String(erro)}`));
@@ -93,11 +96,29 @@ export async function duplicarFicha(id: string): Promise<Ficha> {
     nome: `${original.nome} (cópia)`,
     criadaEm: agora,
     atualizadaEm: agora,
+    temRetrato: false,
   };
+  if (original.temRetrato) {
+    try {
+      const imagem = await lerRetrato(original.id);
+      if (imagem) {
+        await salvarRetrato(copia.id, imagem);
+        copia.temRetrato = true;
+      }
+    } catch (erro) {
+      // A cópia sai sem imagem, mas sai.
+      registrarErro("duplicar-retrato", erro);
+    }
+  }
   await salvarFicha(copia);
   return copia;
 }
 
 export async function excluirFicha(id: string): Promise<void> {
   await armazenamento().apagar(caminho(id));
+  try {
+    await removerRetrato(id);
+  } catch (erro) {
+    registrarErro("excluir-retrato", erro);
+  }
 }

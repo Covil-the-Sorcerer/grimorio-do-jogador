@@ -4,10 +4,12 @@ export function CampoTexto({
   rotulo,
   valor,
   aoMudar,
+  dica,
 }: {
   rotulo: string;
   valor: string;
   aoMudar: (novo: string) => void;
+  dica?: string;
 }) {
   const id = useId();
   return (
@@ -19,6 +21,7 @@ export function CampoTexto({
         id={id}
         type="text"
         value={valor}
+        placeholder={dica}
         onChange={(evento) => aoMudar(evento.target.value)}
         className="min-h-[44px] w-full rounded-lg border border-borda bg-superficie px-3 py-2 text-base text-texto"
       />

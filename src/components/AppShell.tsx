@@ -1,7 +1,11 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import { IconeDado } from "./IconeDado";
 import { Logo } from "./Logo";
+import { PainelDeDados } from "./PainelDeDados";
+import { ResultadoRapido } from "./ResultadoRapido";
 import { ThemeToggle } from "./ThemeToggle";
+import { abrirPainel, useDados } from "../data/rolagens";
 import { VERSAO_DO_APP } from "../versao";
 import { t } from "../i18n/pt-BR";
 
@@ -30,6 +34,7 @@ export function AppShell() {
   const [aberto, setAberto] = useState(false);
   const { pathname } = useLocation();
   const larga = useTelaLarga();
+  const dados = useDados();
 
   // Fecha a gaveta ao trocar de página.
   useEffect(() => {
@@ -131,10 +136,24 @@ export function AppShell() {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-4xl px-4 py-6">
+        <main className="mx-auto w-full max-w-4xl px-4 pb-28 pt-6">
           <Outlet />
         </main>
       </div>
+
+      {!dados.painelAberto && (
+        <button
+          type="button"
+          onClick={abrirPainel}
+          aria-label={t.dados.abrir}
+          title={t.dados.abrir}
+          className="fixed bottom-4 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-destaque text-sobredestaque shadow-lg"
+        >
+          <IconeDado rotulo="d20" tamanho={38} />
+        </button>
+      )}
+      {dados.painelAberto && <PainelDeDados />}
+      <ResultadoRapido />
     </div>
   );
 }

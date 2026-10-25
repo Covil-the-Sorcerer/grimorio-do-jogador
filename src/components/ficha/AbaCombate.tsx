@@ -1,10 +1,14 @@
 import type { PropsAba } from "./tipos";
 import { definirSobrescrita } from "./tipos";
+import { BotaoRolar } from "../BotaoRolar";
 import { CampoCalculado } from "../CampoCalculado";
+import { SecaoAtaques } from "./SecaoAtaques";
+import { rolarTeste } from "../../data/rolagens";
 import { CampoNumero } from "../CampoNumero";
 import { t } from "../../i18n/pt-BR";
 
-export function AbaCombate({ ficha, calc, atualizar }: PropsAba) {
+export function AbaCombate(props: PropsAba) {
+  const { ficha, calc, atualizar } = props;
   const { vida, deslocamento } = ficha.dados;
 
   return (
@@ -55,12 +59,18 @@ export function AbaCombate({ ficha, calc, atualizar }: PropsAba) {
             aoMudar={(v) => atualizar((f) => definirSobrescrita(f, "ca", v))}
           />
           <span className="text-sm font-semibold">{t.ficha.iniciativa}</span>
-          <CampoCalculado
-            rotulo={t.ficha.iniciativa}
-            valor={calc.iniciativa}
-            comSinal
-            aoMudar={(v) => atualizar((f) => definirSobrescrita(f, "iniciativa", v))}
-          />
+          <div className="flex flex-wrap items-center gap-2">
+            <CampoCalculado
+              rotulo={t.ficha.iniciativa}
+              valor={calc.iniciativa}
+              comSinal
+              aoMudar={(v) => atualizar((f) => definirSobrescrita(f, "iniciativa", v))}
+            />
+            <BotaoRolar
+              rotulo={t.combate.rolarIniciativa}
+              aoRolar={() => rolarTeste(calc.iniciativa.efetivo, t.ficha.iniciativa, ficha.nome)}
+            />
+          </div>
           <span className="text-sm font-semibold">{t.combate.deslocamento}</span>
           <div className="max-w-[8rem]">
             <CampoNumero
@@ -73,6 +83,8 @@ export function AbaCombate({ ficha, calc, atualizar }: PropsAba) {
           </div>
         </div>
       </div>
+
+      <SecaoAtaques {...props} />
     </div>
   );
 }

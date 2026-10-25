@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { carregarRolagens } from "./data/rolagens";
 import { iniciarCapturaDeErros } from "./lib/diagnostico";
 import { carregarPreferencias } from "./lib/preferencias";
 import "./index.css";
@@ -21,3 +22,4 @@ createRoot(raiz).render(
 
 // O app abre já com o tema do último uso; aqui lemos o arquivo para confirmar.
 void carregarPreferencias();
+void carregarRolagens();

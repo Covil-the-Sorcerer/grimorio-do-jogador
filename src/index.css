@@ -87,3 +87,32 @@ body {
     @apply font-semibold text-destaque underline underline-offset-2;
   }
 }
+
+/* ---------- Abas com rolagem escondida e setas nas pontas ---------- */
+.sem-barra {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.sem-barra::-webkit-scrollbar {
+  display: none;
+}
+.fade-aba-esq {
+  background: linear-gradient(to right, var(--fundo) 55%, transparent);
+}
+.fade-aba-dir {
+  background: linear-gradient(to left, var(--fundo) 55%, transparent);
+}
+.seta-aba {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--borda);
+  background: var(--superficie);
+  color: var(--texto);
+}
+.seta-aba:hover {
+  background: var(--superficie-2);
+}

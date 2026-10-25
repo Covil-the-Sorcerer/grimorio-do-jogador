@@ -86,9 +86,9 @@ function assinar(avisar: () => void) {
 // Qualquer tela que use estes ganchos se atualiza quando o tema ou a fonte mudam,
 // venha a mudança do botão do cabeçalho ou das Configurações.
 export function useTema(): Tema {
-  return useSyncExternalStore(assinar, () => estado.tema);
+  return useSyncExternalStore(assinar, () => estado.tema, () => estado.tema);
 }
 
 export function useFonte(): Fonte {
-  return useSyncExternalStore(assinar, () => estado.fonte);
+  return useSyncExternalStore(assinar, () => estado.fonte, () => estado.fonte);
 }

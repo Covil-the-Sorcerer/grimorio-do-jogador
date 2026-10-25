@@ -12,15 +12,20 @@ export interface RetratoDaFicha {
   definir: (url: string | null) => void;
 }
 
-const CAMPOS: { chave: keyof TextosPersonagem; rotulo: string; linhas: number }[] = [
-  { chave: "tracosPersonalidade", rotulo: t.personagem.tracosPersonalidade, linhas: 4 },
-  { chave: "ideais", rotulo: t.personagem.ideais, linhas: 4 },
-  { chave: "vinculos", rotulo: t.personagem.vinculos, linhas: 4 },
-  { chave: "fraquezas", rotulo: t.personagem.fraquezas, linhas: 4 },
-  { chave: "historia", rotulo: t.personagem.historia, linhas: 8 },
-  { chave: "caracteristicasFisicas", rotulo: t.personagem.caracteristicasFisicas, linhas: 4 },
-  { chave: "aliadosOrganizacoes", rotulo: t.personagem.aliadosOrganizacoes, linhas: 4 },
-  { chave: "tesouros", rotulo: t.personagem.tesouros, linhas: 4 },
+const CAMPOS: {
+  chave: keyof TextosPersonagem;
+  rotulo: string;
+  linhas: number;
+  largura: "meia" | "inteira";
+}[] = [
+  { chave: "caracteristicasFisicas", rotulo: t.personagem.caracteristicasFisicas, linhas: 4, largura: "meia" },
+  { chave: "tracosPersonalidade", rotulo: t.personagem.tracosPersonalidade, linhas: 4, largura: "meia" },
+  { chave: "ideais", rotulo: t.personagem.ideais, linhas: 4, largura: "meia" },
+  { chave: "vinculos", rotulo: t.personagem.vinculos, linhas: 4, largura: "meia" },
+  { chave: "fraquezas", rotulo: t.personagem.fraquezas, linhas: 4, largura: "meia" },
+  { chave: "aliadosOrganizacoes", rotulo: t.personagem.aliadosOrganizacoes, linhas: 4, largura: "meia" },
+  { chave: "tesouros", rotulo: t.personagem.tesouros, linhas: 4, largura: "inteira" },
+  { chave: "historia", rotulo: t.personagem.historia, linhas: 8, largura: "inteira" },
 ];
 
 export function AbaPersonagem({
@@ -118,7 +123,7 @@ export function AbaPersonagem({
 
       <div className="cartao grid gap-4 p-5 md:grid-cols-2">
         {CAMPOS.map((campo) => (
-          <div key={campo.chave} className={campo.chave === "historia" ? "md:col-span-2" : ""}>
+          <div key={campo.chave} className={campo.largura === "inteira" ? "md:col-span-2" : ""}>
             <CampoAreaTexto
               rotulo={campo.rotulo}
               linhas={campo.linhas}

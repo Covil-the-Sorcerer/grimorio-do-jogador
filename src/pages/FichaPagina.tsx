@@ -8,6 +8,7 @@ import { AbaInformacoes } from "../components/ficha/AbaInformacoes";
 import { AbaPersonagem } from "../components/ficha/AbaPersonagem";
 import { AbaPericias } from "../components/ficha/AbaPericias";
 import { Cabecalho } from "../components/ficha/Cabecalho";
+import { AbasRolaveis } from "../components/AbasRolaveis";
 import { calcularTudo } from "../engine/rules/calcular";
 import { useFicha } from "../lib/useFicha";
 import { useRetrato } from "../lib/useRetrato";
@@ -82,26 +83,7 @@ export function FichaPagina() {
     <section>
       <Cabecalho {...propriedades} salvamento={salvamento} retratoUrl={retrato.url} />
 
-      <div
-        role="tablist"
-        aria-label={t.ficha.abas}
-        className="-mx-4 flex gap-1 overflow-x-auto border-b border-borda px-4 py-2"
-      >
-        {ABAS.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            role="tab"
-            id={`aba-${item.id}`}
-            aria-selected={aba === item.id}
-            aria-controls="painel-ficha"
-            onClick={() => setAba(item.id)}
-            className={`btn shrink-0 ${aba === item.id ? "btn-primario" : "btn-secundario"}`}
-          >
-            {item.rotulo}
-          </button>
-        ))}
-      </div>
+      <AbasRolaveis abas={ABAS} atual={aba} aoEscolher={setAba} rotulo={t.ficha.abas} />
 
       <div id="painel-ficha" role="tabpanel" aria-labelledby={`aba-${aba}`} className="pt-4">
         {aba === "info" && <AbaInformacoes {...propriedades} />}

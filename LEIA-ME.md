@@ -1,18 +1,28 @@
-# Grimório do Jogador — versão de Windows (0.3: abas Personagem e Habilidades)
+# Grimório do Jogador — versão de Windows (0.4: rolador de dados)
 
 App para criar, guardar e usar fichas de RPG de mesa, 100% no seu computador (sem conta, sem internet, sem nuvem).
 
 ## O que há de novo nesta versão
 
-- **Aba "Personagem":** campos de texto para traços de personalidade, ideais, vínculos, fraquezas, história, características físicas, aliados e organizações e tesouros, mais a **imagem de perfil** do personagem.
-- **Imagem de perfil:** você escolhe um arquivo (JPG, PNG ou WebP); o app recorta em quadrado, reduz e guarda no aparelho. Ela aparece no topo da ficha e no card da lista. Duplicar uma ficha copia a imagem, e excluir a ficha apaga a imagem.
-- **Aba "Habilidades e proficiências":** listas para **armas**, **armaduras e escudos**, **ferramentas e instrumentos** e **idiomas** (digite e aperte Enter para adicionar; toque no × para remover) e **cartões de habilidades** (nome, origem e descrição), com confirmação ao remover.
-- **Ordem das abas:** Informações, Personagem, Atributos, Perícias, Combate, Habilidades e proficiências, Anotações.
-- A opção de **especialista** nas perícias continua como estava. Quando entrar a criação guiada, ela ficará disponível só para Bardo e Ladino.
-- **Mais testes automáticos** do motor de regras e da leitura de fichas (agora 25).
-- Fichas criadas na versão anterior continuam abrindo normalmente; os campos novos começam vazios.
+**Rolador de dados**
+- **Botão redondo com um d20** no canto de baixo à direita de qualquer tela: abre o **Painel de Dados**.
+- **Dados rápidos:** d4, d6, d8, d10, d12, d20 e d100. Um toque rola o dado escolhido.
+- **Fórmula livre:** digite, por exemplo, `2d8+3`, `1d20-1` ou `2d6+1d4+2` e toque em Rolar.
+- **Vantagem e desvantagem:** vale para rolagens com 1d20 (rola duas vezes e fica com o maior ou o menor; o dado descartado aparece riscado).
+- **Resultado detalhado:** nome da rolagem, total, a conta (dados e modificador), o horário e a marca "20 Natural" ou "1 Natural".
+- **Histórico** só seu, com as últimas 100 rolagens, guardado no aparelho. Há botão para limpar.
+- **Resultado rápido:** ao rolar com o painel fechado, o resultado aparece por alguns segundos na tela.
+- **Rolagens ligadas à ficha:** botão com d20 ao lado de cada **teste de atributo**, **resistência**, **perícia** e da **iniciativa**, já somando o modificador atual (inclusive se você trocou o valor à mão).
+- **Ataques (aba Combate):** adicione ataques com nome, bônus, dano (por exemplo `1d8+3`) e tipo de dano. Cada ataque tem **Atacar**, **Rolar Dano** e **Dano Crítico** (que dobra os dados, mas não os bônus).
 
-Ainda **não** existe: rolagem de dados, criação guiada, magias, inventário, listas de raças e classes, exportar/importar ficha e cópia de segurança.
+**Ajustes pedidos**
+- **Aba Personagem em duas colunas**, na ordem: Características Físicas | Traços de Personalidade; Ideais | Vínculos; Fraquezas | Aliados e Organizações; Tesouros; História.
+- **Nomes de campos, abas, títulos e botões** com inicial maiúscula em cada palavra (e, o, a, os, as, de, do, da, dos, das, em, no, na, com, ou, ao, aos e para ficam em minúsculo no meio). Frases de explicação e avisos seguem como frases normais.
+- **Abas sem barra de rolagem:** quando há abas fora da tela, a ponta fica com efeito de esmaecer e uma seta clicável. O efeito some ao chegar no limite. A aba escolhida sempre fica à vista.
+
+**Por dentro:** 37 testes automáticos (motor de regras, leitura de fichas e rolagem de dados), que rodam antes de cada compilação. Fichas das versões anteriores continuam abrindo (a lista de ataques começa vazia).
+
+Ainda **não** existe: criação guiada, magias, inventário, listas de raça e classe, exportar/importar ficha e cópia de segurança.
 
 ## Como atualizar o app
 
@@ -24,15 +34,18 @@ Ainda **não** existe: rolagem de dados, criação guiada, magias, inventário, 
 
 ## O que testar
 
-1. **Atualização:** depois de instalar por cima, suas fichas antigas devem abrir normalmente e ter as abas novas.
-2. **Aba Personagem:** escreva um texto em cada campo (inclusive uma história longa). Feche e abra o app e confira que tudo ficou salvo.
-3. **Imagem de perfil:** em Personagem, toque em **Escolher imagem** e escolha uma foto. Ela deve aparecer ali, no topo da ficha e no card da lista de fichas. Teste também **Trocar imagem** e **Remover imagem**.
-4. **Imagens difíceis:** tente uma foto grande (de celular), um PNG com fundo transparente e um arquivo que não seja imagem (deve aparecer uma mensagem de erro clara, sem travar).
-5. **Duplicar e excluir:** duplique uma ficha com imagem (a cópia deve ter a mesma imagem) e exclua uma delas.
-6. **Aba Habilidades e proficiências:** adicione armas, armaduras, ferramentas e idiomas pelo campo + Enter. Tente repetir um item (não deve duplicar) e remover com o ×.
-7. **Cartões de habilidades:** adicione uma habilidade, preencha nome, origem e descrição, e depois remova (deve pedir confirmação).
-8. **Abas em janela estreita:** diminua a janela e veja se a barra de abas rola para o lado e se tudo continua utilizável.
-9. **Sem regressão:** confira que atributos, perícias, override, PV e salvamento continuam funcionando.
+1. **Atualização:** depois de instalar por cima, suas fichas e a imagem de perfil devem estar como antes.
+2. **Painel de dados:** toque no botão redondo. Role cada dado (d4 a d100) e confira se os resultados ficam entre 1 e o número de lados.
+3. **Fórmulas:** digite `2d8+3`, `1d20-1`, `1d20 + 5` (com espaços) e `2d6+1d4+2`. Depois tente fórmulas erradas (`2d6 3`, `abc`, `0d6`, `1d2000`): deve aparecer uma mensagem clara.
+4. **Vantagem e desvantagem:** escolha **Vantagem**, role `1d20+5` e veja dois dados, um deles riscado (o menor). Faça o mesmo com **Desvantagem** (o maior fica riscado). Com `2d6`, o modo é ignorado.
+5. **Natural:** role o d20 várias vezes até aparecer "20 Natural" ou "1 Natural".
+6. **Histórico:** feche e abra o app: as rolagens anteriores continuam. Teste **Limpar Histórico** (pede confirmação).
+7. **Resultado rápido:** feche o painel, role algo pela ficha e veja o cartão aparecer por alguns segundos. O botão "Ver Histórico" abre o painel.
+8. **Ligação com a ficha:** na aba Atributos, toque no d20 ao lado de um modificador e de uma resistência; em Perícias, role uma perícia com proficiência; em Combate, role a iniciativa. Confira se o total bate com o número da ficha. Troque um valor à mão (override) e role de novo: deve usar o valor trocado.
+9. **Ataques:** em Combate, adicione um ataque (`Adaga`, bônus 5, dano `1d4+3`). Teste **Atacar**, **Rolar Dano** e **Dano Crítico** (deve rolar 2d4+3). Digite uma fórmula de dano inválida e veja o aviso. Remova o ataque (pede confirmação).
+10. **Aba Personagem:** confira a ordem em duas colunas e, ao diminuir a janela, a coluna única.
+11. **Nomes:** confira as maiúsculas nos rótulos, abas e botões do app inteiro e me avise se algum ficou fora da regra.
+12. **Abas com setas:** diminua a janela até as abas não caberem. Deve aparecer o esmaecer com uma seta à direita; clique nela para rolar, e veja a seta da esquerda aparecer. Ao chegar no fim, a seta da direita some. Teste também com o toque/touchpad e com a tecla Tab.
 
 ## Se der erro
 

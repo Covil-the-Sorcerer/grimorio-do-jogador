@@ -13,6 +13,16 @@ export interface Habilidade {
   descricao: string;
 }
 
+export interface Ataque {
+  id: string;
+  nome: string;
+  /** Bônus somado ao d20 do ataque. */
+  bonus: number;
+  /** Fórmula do dano, ex.: "1d8+3". */
+  dano: string;
+  tipoDano: string;
+}
+
 export interface TextosPersonagem {
   tracosPersonalidade: string;
   ideais: string;
@@ -55,4 +65,5 @@ export interface DadosDnd5e {
   outrasProficiencias: OutrasProficiencias;
   idiomas: string[];
   habilidades: Habilidade[];
+  ataques: Ataque[];
 }

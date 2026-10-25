@@ -1,6 +1,6 @@
 import { dnd5e2014 } from "../systems/dnd5e/2014/definicao";
 import { dadosVazios } from "../systems/dnd5e/2014/dados";
-import type { DadosDnd5e, Habilidade } from "../systems/dnd5e/2014/tipos";
+import type { Ataque, DadosDnd5e, Habilidade } from "../systems/dnd5e/2014/tipos";
 
 export const SCHEMA_ATUAL = 1;
 
@@ -72,6 +72,7 @@ function registro(valor: unknown): Record<string, unknown> {
 
 const MAXIMO_ITENS_LISTA = 200;
 const MAXIMO_HABILIDADES = 500;
+const MAXIMO_ATAQUES = 100;
 
 // Lista de textos curtos (proficiências, idiomas): sem vazios, sem repetidos (ignorando maiúsculas).
 function listaDeTextos(valor: unknown): string[] {
@@ -108,6 +109,28 @@ function listaDeHabilidades(valor: unknown): Habilidade[] {
       descricao: texto(r.descricao, ""),
     });
     if (saida.length >= MAXIMO_HABILIDADES) break;
+  }
+  return saida;
+}
+
+function listaDeAtaques(valor: unknown): Ataque[] {
+  if (!Array.isArray(valor)) return [];
+  const saida: Ataque[] = [];
+  const ids = new Set<string>();
+  for (const item of valor) {
+    if (typeof item !== "object" || item === null || Array.isArray(item)) continue;
+    const r = item as Record<string, unknown>;
+    let id = texto(r.id, "");
+    if (!id || ids.has(id)) id = novoId();
+    ids.add(id);
+    saida.push({
+      id,
+      nome: texto(r.nome, ""),
+      bonus: numero(r.bonus, 0, -50, 50),
+      dano: texto(r.dano, "").slice(0, 60),
+      tipoDano: texto(r.tipoDano, "").slice(0, 40),
+    });
+    if (saida.length >= MAXIMO_ATAQUES) break;
   }
   return saida;
 }
@@ -191,6 +214,7 @@ export function normalizarFicha(bruto: unknown, idDoArquivo: string): Ficha {
       },
       idiomas: listaDeTextos(d.idiomas),
       habilidades: listaDeHabilidades(d.habilidades),
+      ataques: listaDeAtaques(d.ataques),
     },
   };
 }

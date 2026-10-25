@@ -1,6 +1,8 @@
 import type { PropsAba } from "./tipos";
 import { definirSobrescrita } from "./tipos";
+import { BotaoRolar } from "../BotaoRolar";
 import { CampoCalculado } from "../CampoCalculado";
+import { rolarTeste } from "../../data/rolagens";
 import { dnd5e2014 } from "../../systems/dnd5e/2014/definicao";
 import { t } from "../../i18n/pt-BR";
 
@@ -45,6 +47,10 @@ export function AbaPericias({ ficha, calc, atualizar }: PropsAba) {
                   {siglaDe(p.atributo)} · {NOME_NIVEL[nivel]}
                 </div>
               </div>
+              <BotaoRolar
+                rotulo={`${t.pericias.rolar} ${p.nome}`}
+                aoRolar={() => rolarTeste(calc[`pericia.${p.id}`].efetivo, p.nome, ficha.nome)}
+              />
               <CampoCalculado
                 rotulo={p.nome}
                 valor={calc[`pericia.${p.id}`]}

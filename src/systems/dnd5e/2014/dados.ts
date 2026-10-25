@@ -39,5 +39,6 @@ export function dadosVazios(): DadosDnd5e {
     outrasProficiencias: { armas: [], armaduras: [], ferramentas: [] },
     idiomas: [],
     habilidades: [],
+    ataques: [],
   };
 }

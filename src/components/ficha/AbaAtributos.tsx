@@ -1,7 +1,9 @@
 import type { PropsAba } from "./tipos";
 import { definirSobrescrita } from "./tipos";
 import { CampoCalculado } from "../CampoCalculado";
+import { BotaoRolar } from "../BotaoRolar";
 import { CampoNumero } from "../CampoNumero";
+import { rolarTeste } from "../../data/rolagens";
 import { dnd5e2014 } from "../../systems/dnd5e/2014/definicao";
 import { t } from "../../i18n/pt-BR";
 
@@ -40,19 +42,33 @@ export function AbaAtributos({ ficha, calc, atualizar }: PropsAba) {
                   aoMudar={(v) => atualizar((f) => void (f.dados.atributos[a.id] = v))}
                 />
                 <span className="text-sm text-suave">{t.atributos.modificador}</span>
-                <CampoCalculado
-                  rotulo={`${t.atributos.modificador} de ${a.nome}`}
-                  valor={calc[`mod.${a.id}`]}
-                  comSinal
-                  aoMudar={(v) => atualizar((f) => definirSobrescrita(f, `mod.${a.id}`, v))}
-                />
+                <div className="flex flex-wrap items-center gap-2">
+                  <CampoCalculado
+                    rotulo={`${t.atributos.modificador} de ${a.nome}`}
+                    valor={calc[`mod.${a.id}`]}
+                    comSinal
+                    aoMudar={(v) => atualizar((f) => definirSobrescrita(f, `mod.${a.id}`, v))}
+                  />
+                  <BotaoRolar
+                    rotulo={`${t.atributos.rolarTeste} ${a.nome}`}
+                    aoRolar={() => rolarTeste(calc[`mod.${a.id}`].efetivo, `Teste de ${a.nome}`, ficha.nome)}
+                  />
+                </div>
                 <span className="text-sm text-suave">{t.atributos.resistencia}</span>
-                <CampoCalculado
-                  rotulo={`${t.atributos.resistencia} de ${a.nome}`}
-                  valor={calc[`resistencia.${a.id}`]}
-                  comSinal
-                  aoMudar={(v) => atualizar((f) => definirSobrescrita(f, `resistencia.${a.id}`, v))}
-                />
+                <div className="flex flex-wrap items-center gap-2">
+                  <CampoCalculado
+                    rotulo={`${t.atributos.resistencia} de ${a.nome}`}
+                    valor={calc[`resistencia.${a.id}`]}
+                    comSinal
+                    aoMudar={(v) => atualizar((f) => definirSobrescrita(f, `resistencia.${a.id}`, v))}
+                  />
+                  <BotaoRolar
+                    rotulo={`${t.atributos.rolarResistencia} ${a.nome}`}
+                    aoRolar={() =>
+                      rolarTeste(calc[`resistencia.${a.id}`].efetivo, `Resistência de ${a.nome}`, ficha.nome)
+                    }
+                  />
+                </div>
               </div>
 
               <label className="flex min-h-[44px] items-center gap-2 text-sm">

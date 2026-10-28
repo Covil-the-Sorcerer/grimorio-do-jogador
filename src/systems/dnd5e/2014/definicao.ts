@@ -59,7 +59,13 @@ const calculados: DefCalculado[] = [
     formula: `mod.${p.atributo} + proficiencia.pericias.${p.id} * bonusProficiencia`,
   })),
   { chave: "iniciativa", nome: "Iniciativa", formula: "mod.des" },
-  { chave: "ca", nome: "Classe de Armadura", formula: "10 + mod.des" },
+  {
+    chave: "ca",
+    nome: "Classe de Armadura",
+    // Sem armadura: 10 + Destreza. As regras de Bárbaro, Monge e Linhagem Dracônica entram pelos marcadores.
+    formula:
+      "10 + mod.des + defesaSemArmadura.barbaro * mod.con + defesaSemArmadura.monge * mod.sab + defesaSemArmadura.draconico * 3",
+  },
   { chave: "percepcaoPassiva", nome: "Percepção passiva", formula: "10 + pericia.percepcao" },
 ];
 

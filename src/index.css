@@ -116,3 +116,11 @@ body {
 .seta-aba:hover {
   background: var(--superficie-2);
 }
+
+/* ---------- Área rolável vertical (painel de dados) ---------- */
+.fade-vert-topo {
+  background: linear-gradient(to bottom, var(--fundo) 45%, transparent);
+}
+.fade-vert-base {
+  background: linear-gradient(to top, var(--fundo) 45%, transparent);
+}

@@ -93,6 +93,9 @@ export function Configuracoes() {
           <Link to="/diagnostico" className="btn btn-secundario">
             {t.config.diagnostico}
           </Link>
+          <Link to="/sobre" className="btn btn-secundario ml-2">
+            {t.config.sobre}
+          </Link>
         </div>
       </div>
     </section>

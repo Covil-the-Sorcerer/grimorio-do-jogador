@@ -4,17 +4,21 @@ import { BotaoRolar } from "../BotaoRolar";
 import { CampoCalculado } from "../CampoCalculado";
 import { rolarTeste } from "../../data/rolagens";
 import { dnd5e2014 } from "../../systems/dnd5e/2014/definicao";
+import { permiteEspecializacao } from "../../systems/dnd5e/2014/especializacao";
 import { t } from "../../i18n/pt-BR";
 
 const SIMBOLO = ["○", "●", "◆"];
 const NOME_NIVEL = [t.pericias.sem, t.pericias.proficiente, t.pericias.especialista];
 
 export function AbaPericias({ ficha, calc, atualizar }: PropsAba) {
+  const especializacaoLiberada = permiteEspecializacao(ficha.dados);
   const siglaDe = (id: string) => dnd5e2014.atributos.find((a) => a.id === id)?.sigla ?? "";
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-suave">{t.pericias.dica}</p>
+      <p className="text-sm text-suave">
+        {especializacaoLiberada ? t.pericias.dica : t.pericias.dicaSemEspecializacao}
+      </p>
 
       <div className="cartao flex flex-wrap items-center justify-between gap-3 p-4">
         <span className="font-semibold">{t.pericias.passiva}</span>
@@ -36,7 +40,11 @@ export function AbaPericias({ ficha, calc, atualizar }: PropsAba) {
                 aria-label={`${p.nome}: ${NOME_NIVEL[nivel]}. Toque para alternar.`}
                 title={NOME_NIVEL[nivel]}
                 onClick={() =>
-                  atualizar((f) => void (f.dados.proficiencia.pericias[p.id] = (nivel + 1) % 3))
+                  atualizar((f) => {
+                    const atual = f.dados.proficiencia.pericias[p.id];
+                    // Especialista só existe para Bardo e Ladino.
+                    f.dados.proficiencia.pericias[p.id] = especializacaoLiberada ? (atual + 1) % 3 : atual === 0 ? 1 : 0;
+                  })
                 }
               >
                 {SIMBOLO[nivel]}

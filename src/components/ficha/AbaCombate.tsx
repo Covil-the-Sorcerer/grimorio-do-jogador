@@ -78,6 +78,7 @@ export function AbaCombate(props: PropsAba) {
               minimo={0}
               maximo={999}
               rotulo={t.combate.deslocamento}
+              meioPonto
               aoMudar={(v) => atualizar((f) => void (f.dados.deslocamento = v))}
             />
           </div>

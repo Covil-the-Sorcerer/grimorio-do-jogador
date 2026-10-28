@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import { AreaRolavel } from "./AreaRolavel";
 import { CartaoRolagem } from "./CartaoRolagem";
 import { IconeDado } from "./IconeDado";
 import { Modal } from "./Modal";
@@ -62,7 +63,7 @@ export function PainelDeDados() {
         </button>
       </div>
 
-      <div className="space-y-4 overflow-y-auto p-4">
+      <AreaRolavel className="flex-1" classeInterna="space-y-4 p-4">
         <div className="flex flex-wrap gap-2">
           {DADOS.map((lados) => (
             <button
@@ -151,7 +152,7 @@ export function PainelDeDados() {
             </ul>
           )}
         </div>
-      </div>
+      </AreaRolavel>
 
       {limpando && (
         <Modal titulo={t.dados.limparTitulo} aoFechar={() => setLimpando(false)}>

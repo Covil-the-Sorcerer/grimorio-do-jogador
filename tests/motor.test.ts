@@ -440,3 +440,359 @@ test("ficha: ataques são lidos com valores seguros", () => {
   assert.equal(new Set(lida.dados.ataques.map((a) => a.id)).size, 3);
   assert.deepEqual(criarFichaVazia({ nome: "A", versaoRegras: "2014", multiclasse: false }).dados.ataques, []);
 });
+
+// ---------- CA sem armadura e regras novas ----------
+import { permiteEspecializacao } from "../src/systems/dnd5e/2014/especializacao";
+
+test("D&D: CA de Bárbaro, Monge e Linhagem Dracônica sem armadura", () => {
+  const d = dadosVazios();
+  d.atributos.des = 14; // +2
+  d.atributos.con = 16; // +3
+  d.atributos.sab = 12; // +1
+  assert.equal(calcularTudo(dnd5e2014, d).ca.efetivo, 12);
+  d.defesaSemArmadura.barbaro = 1;
+  assert.equal(calcularTudo(dnd5e2014, d).ca.efetivo, 15);
+  d.defesaSemArmadura.barbaro = 0;
+  d.defesaSemArmadura.monge = 1;
+  assert.equal(calcularTudo(dnd5e2014, d).ca.efetivo, 13);
+  d.defesaSemArmadura.monge = 0;
+  d.defesaSemArmadura.draconico = 1;
+  assert.equal(calcularTudo(dnd5e2014, d).ca.efetivo, 15); // 13 + DES
+  d.sobrescritas.ca = 20;
+  assert.equal(calcularTudo(dnd5e2014, d).ca.efetivo, 20);
+});
+
+test("ficha: deslocamento aceita meio ponto e campos novos têm padrão", () => {
+  const lida = normalizarFicha({ dados: { deslocamento: 7.5 } }, "abcdef123456");
+  assert.equal(lida.dados.deslocamento, 7.5);
+  assert.equal(normalizarFicha({ dados: { deslocamento: 7.26 } }, "abcdef123456").dados.deslocamento, 7.5);
+  assert.equal(normalizarFicha({ dados: { deslocamento: "x" } }, "abcdef123456").dados.deslocamento, 9);
+  assert.deepEqual(lida.dados.defesaSemArmadura, { barbaro: 0, monge: 0, draconico: 0 });
+  assert.equal(lida.dados.origem.classeId, "");
+  assert.equal(normalizarFicha({ dados: { defesaSemArmadura: { barbaro: 5 } } }, "abcdef123456").dados.defesaSemArmadura.barbaro, 1);
+});
+
+test("D&D: especialização só para Bardo e Ladino", () => {
+  const d = dadosVazios();
+  assert.equal(permiteEspecializacao(d), false);
+  d.classe = "Guerreiro";
+  assert.equal(permiteEspecializacao(d), false);
+  d.classe = "Ladino";
+  assert.equal(permiteEspecializacao(d), true);
+  d.classe = "  bardo ";
+  assert.equal(permiteEspecializacao(d), true);
+  d.classe = "Ladina";
+  assert.equal(permiteEspecializacao(d), true);
+  d.classe = "Rogue";
+  assert.equal(permiteEspecializacao(d), true);
+  d.classe = "Bardoso";
+  assert.equal(permiteEspecializacao(d), false);
+  d.classe = "Guerreiro";
+  d.origem.classeId = "ladino";
+  assert.equal(permiteEspecializacao(d), true);
+});
+
+// ---------- Criação guiada ----------
+import {
+  PERSONALIZADA,
+  atributosFinais,
+  escolhasIniciais,
+  gruposDePericias,
+  montarFicha,
+  periciasBloqueadas,
+  periciasConcedidas,
+  periciasProficientes,
+  previa,
+  problemasDoPasso,
+  trocarClasse,
+  trocarRaca,
+  type EscolhasCriacao,
+} from "../src/systems/dnd5e/2014/criacao";
+import { RACAS_SRD } from "../src/systems/dnd5e/2014/srd/racas";
+import { CLASSES_SRD } from "../src/systems/dnd5e/2014/srd/classes";
+import { ANTECEDENTES_SRD } from "../src/systems/dnd5e/2014/srd/antecedentes";
+import { ANCESTRAIS_DRACONICOS, ESTILOS_DE_LUTA, IDIOMAS_PADRAO } from "../src/systems/dnd5e/2014/srd/geral";
+
+let contadorDeIds = 0;
+const idsDeTeste = () => `id-de-teste-${++contadorDeIds}`;
+
+function guerreiroAnaoDaColina(): EscolhasCriacao {
+  let e = escolhasIniciais();
+  e.nome = "Thorin";
+  e = trocarRaca(e, "anao");
+  e.subRacaId = "anaoColina";
+  e.ferramentaRaca = "Ferramentas de pedreiro";
+  e = trocarClasse(e, "guerreiro");
+  e.estiloDeLutaId = "defesa";
+  e.periciasClasse = ["atletismo", "percepcao"];
+  e.antecedenteId = "acolito";
+  e.idiomasAntecedente = ["Élfico", "Gigante"];
+  e.atributosBase = { for: 15, des: 12, con: 14, int: 8, sab: 10, car: 10 };
+  return e;
+}
+
+test("criação: os dados do SRD estão consistentes", () => {
+  const atributos = new Set(dnd5e2014.atributos.map((a) => a.id));
+  const pericias = new Set(dnd5e2014.pericias.map((p) => p.id));
+  const ids = new Set<string>();
+  for (const r of RACAS_SRD) {
+    assert.ok(!ids.has(r.id), `raça repetida ${r.id}`);
+    ids.add(r.id);
+    for (const id of Object.keys(r.bonusAtributos)) assert.ok(atributos.has(id), `${r.nome}: atributo ${id}`);
+    for (const id of r.periciasFixas) assert.ok(pericias.has(id), `${r.nome}: perícia ${id}`);
+    assert.ok(r.deslocamento > 0 && r.deslocamento * 2 === Math.round(r.deslocamento * 2), `${r.nome}: deslocamento`);
+    for (const s of r.subRacas) {
+      assert.ok(!ids.has(s.id), `sub-raça repetida ${s.id}`);
+      ids.add(s.id);
+      for (const id of Object.keys(s.bonusAtributos)) assert.ok(atributos.has(id), `${s.nome}: atributo ${id}`);
+    }
+    for (const i of r.idiomas) assert.ok(IDIOMAS_PADRAO.includes(i), `${r.nome}: idioma ${i}`);
+  }
+  assert.equal(RACAS_SRD.length, 9);
+  const classes = new Set<string>();
+  for (const c of CLASSES_SRD) {
+    assert.ok(!classes.has(c.id), `classe repetida ${c.id}`);
+    classes.add(c.id);
+    assert.ok([6, 8, 10, 12].includes(c.dadoDeVida), `${c.nome}: dado de vida`);
+    assert.equal(c.resistencias.length, 2, `${c.nome}: resistências`);
+    for (const id of c.resistencias) assert.ok(atributos.has(id), `${c.nome}: resistência ${id}`);
+    for (const id of c.opcoesPericias) assert.ok(pericias.has(id), `${c.nome}: perícia ${id}`);
+    if (c.opcoesPericias.length > 0) {
+      assert.ok(c.opcoesPericias.length >= c.quantidadePericias, `${c.nome}: poucas opções de perícia`);
+    }
+    assert.ok(c.tracos.length > 0, `${c.nome}: sem características`);
+  }
+  assert.equal(CLASSES_SRD.length, 12);
+  for (const a of ANTECEDENTES_SRD) for (const id of a.pericias) assert.ok(pericias.has(id));
+  assert.equal(ANCESTRAIS_DRACONICOS.length, 10);
+  assert.equal(ESTILOS_DE_LUTA.length, 6);
+});
+
+test("criação: Anão da Colina Guerreiro Acólito", () => {
+  const esc = guerreiroAnaoDaColina();
+  assert.deepEqual(problemasDoPasso("revisao", esc), []);
+  const final = atributosFinais(esc);
+  assert.equal(final.con, 16); // 14 + 2
+  assert.equal(final.sab, 11); // 10 + 1
+  assert.equal(final.for, 15);
+
+  const f = montarFicha(esc, idsDeTeste);
+  assert.equal(f.nome, "Thorin");
+  assert.equal(f.dados.raca, "Anão da Colina");
+  assert.equal(f.dados.classe, "Guerreiro");
+  assert.equal(f.dados.antecedente, "Acólito");
+  assert.equal(f.dados.nivel, 1);
+  assert.equal(f.dados.deslocamento, 7.5);
+  // PV: d10 + CON (+3) + Tenacidade Anã (+1)
+  assert.equal(f.dados.vida.maximo, 14);
+  assert.equal(f.dados.vida.atual, 14);
+  assert.equal(f.dados.proficiencia.resistencias.for, 1);
+  assert.equal(f.dados.proficiencia.resistencias.con, 1);
+  assert.equal(f.dados.proficiencia.resistencias.des, 0);
+  for (const id of ["atletismo", "percepcao", "intuicao", "religiao"]) assert.equal(f.dados.proficiencia.pericias[id], 1, id);
+  assert.equal(f.dados.proficiencia.pericias.furtividade, 0);
+  assert.ok(f.dados.outrasProficiencias.armaduras.includes("Armaduras pesadas"));
+  assert.ok(f.dados.outrasProficiencias.armas.includes("Machados de batalha"));
+  assert.ok(f.dados.outrasProficiencias.ferramentas.includes("Ferramentas de pedreiro"));
+  assert.deepEqual(f.dados.idiomas, ["Comum", "Anão", "Élfico", "Gigante"]);
+  const nomes = f.dados.habilidades.map((h) => h.nome);
+  for (const esperado of ["Visão no Escuro", "Tenacidade Anã", "Retomar o Fôlego", "Estilo de Luta: Defesa", "Abrigo dos Fiéis"]) {
+    assert.ok(nomes.includes(esperado), `faltou ${esperado}`);
+  }
+  assert.equal(new Set(f.dados.habilidades.map((h) => h.id)).size, f.dados.habilidades.length);
+  assert.equal(f.dados.origem.classeId, "guerreiro");
+  // a ficha montada é válida para o motor e para a leitura
+  const lida = normalizarFicha({ ...f, id: "x", dados: f.dados }, "abcdef123456");
+  assert.doesNotThrow(() => calcularTudo(dnd5e2014, lida.dados));
+  assert.equal(calcularTudo(dnd5e2014, f.dados).ca.efetivo, 11); // 10 + DES(+1)
+});
+
+test("criação: Bárbaro tem a CA sem armadura correta", () => {
+  let e = escolhasIniciais();
+  e = trocarRaca(e, "humano");
+  e.idiomasRaca = ["Orc"];
+  e = trocarClasse(e, "barbaro");
+  e.periciasClasse = ["atletismo", "sobrevivencia"];
+  e.antecedenteId = "acolito";
+  e.idiomasAntecedente = ["Anão", "Goblin"];
+  e.atributosBase = { for: 15, des: 14, con: 15, int: 8, sab: 10, car: 8 };
+  assert.deepEqual(problemasDoPasso("revisao", e), []);
+  const f = montarFicha(e, idsDeTeste);
+  assert.equal(f.dados.defesaSemArmadura.barbaro, 1);
+  // humano +1 em tudo: DES 15 (+2), CON 16 (+3) => 10 + 2 + 3 = 15
+  assert.equal(calcularTudo(dnd5e2014, f.dados).ca.efetivo, 15);
+  // PV: d12 + CON(+3) = 15
+  assert.equal(f.dados.vida.maximo, 15);
+});
+
+test("criação: Meio-Elfo Ladino com especialização e bônus livres", () => {
+  let e = escolhasIniciais();
+  e = trocarRaca(e, "meioElfo");
+  e.bonusLivres = ["des", "con"];
+  e.idiomasRaca = ["Anão"];
+  e.periciasRaca = ["persuasao", "enganacao"];
+  e = trocarClasse(e, "ladino");
+  e.periciasClasse = ["furtividade", "prestidigitacao", "acrobacia", "investigacao"];
+  e.especializacao = ["furtividade", "persuasao"];
+  e.antecedenteId = "acolito";
+  e.idiomasAntecedente = ["Gnômico", "Halfling"];
+  e.atributosBase = { for: 8, des: 15, con: 13, int: 12, sab: 10, car: 14 };
+  assert.deepEqual(problemasDoPasso("revisao", e), []);
+  const final = atributosFinais(e);
+  assert.equal(final.car, 16);
+  assert.equal(final.des, 16);
+  assert.equal(final.con, 14);
+  const f = montarFicha(e, idsDeTeste);
+  assert.equal(f.dados.proficiencia.pericias.furtividade, 2);
+  assert.equal(f.dados.proficiencia.pericias.persuasao, 2);
+  assert.equal(f.dados.proficiencia.pericias.acrobacia, 1);
+  assert.ok(f.dados.idiomas.includes("Gíria de Ladrão"));
+  assert.equal(f.dados.vida.maximo, 8 + 2);
+  // furtividade com especialização: DES +3 e bônus 2*2
+  assert.equal(calcularTudo(dnd5e2014, f.dados)["pericia.furtividade"].efetivo, 3 + 4);
+});
+
+test("criação: Draconato Feiticeiro (Linhagem Dracônica)", () => {
+  let e = escolhasIniciais();
+  e = trocarRaca(e, "draconato");
+  e.ancestralId = "azul";
+  e = trocarClasse(e, "feiticeiro");
+  e.subclasseId = "linhagemDraconica";
+  e.periciasClasse = ["arcanismo", "persuasao"];
+  e.antecedenteId = "acolito";
+  e.idiomasAntecedente = ["Silvestre", "Primordial"];
+  e.atributosBase = { for: 8, des: 14, con: 14, int: 10, sab: 10, car: 15 };
+  assert.deepEqual(problemasDoPasso("revisao", e), []);
+  const f = montarFicha(e, idsDeTeste);
+  assert.equal(f.dados.raca, "Draconato (Azul)");
+  assert.equal(f.dados.defesaSemArmadura.draconico, 1);
+  // PV: d6 + CON(+2) + Resiliência Dracônica(+1)
+  assert.equal(f.dados.vida.maximo, 6 + 2 + 1);
+  // CA: 13 + DES(+2)
+  assert.equal(calcularTudo(dnd5e2014, f.dados).ca.efetivo, 15);
+  const sopro = f.dados.habilidades.find((h) => h.nome === "Arma de Sopro");
+  assert.ok(sopro && sopro.descricao.includes("relâmpago") && sopro.descricao.includes("Destreza"));
+  assert.ok(f.dados.idiomas.includes("Dracônico"));
+  assert.equal(previa(e).vidaMaxima, 9);
+});
+
+test("criação: perguntas obrigatórias aparecem como problemas", () => {
+  const e = escolhasIniciais();
+  assert.deepEqual(problemasDoPasso("nome", e), []);
+  assert.deepEqual(problemasDoPasso("raca", e), ["Escolha uma raça."]);
+  assert.deepEqual(problemasDoPasso("classe", e), ["Escolha uma classe."]);
+  assert.deepEqual(problemasDoPasso("antecedente", e), ["Escolha um antecedente."]);
+  assert.ok(problemasDoPasso("revisao", e).length >= 3);
+
+  let r = trocarRaca(e, "elfo");
+  assert.ok(problemasDoPasso("raca", r).some((p) => p.includes("sub-raça")));
+  r.subRacaId = "altoElfo";
+  assert.ok(problemasDoPasso("raca", r).some((p) => p.includes("idioma")));
+  r.idiomasRaca = ["Anão"];
+  assert.deepEqual(problemasDoPasso("raca", r), []);
+
+  let m = trocarRaca(e, "meioElfo");
+  assert.ok(problemasDoPasso("raca", m).some((p) => p.includes("atributos diferentes")));
+  m.bonusLivres = ["car", "des"]; // Carisma não vale (já recebe +2)
+  assert.ok(problemasDoPasso("raca", m).some((p) => p.includes("atributos diferentes")));
+  m.bonusLivres = ["des", "des"];
+  assert.ok(problemasDoPasso("raca", m).some((p) => p.includes("atributos diferentes")));
+
+  let c = trocarClasse(e, "clerigo");
+  assert.ok(problemasDoPasso("classe", c).some((p) => p.includes("Domínio Divino")));
+  c.subclasseId = PERSONALIZADA;
+  assert.ok(problemasDoPasso("classe", c).some((p) => p.includes("Dê um nome")));
+  c.subclassePersonalizada = "Domínio da Guerra";
+  assert.deepEqual(problemasDoPasso("classe", c), []);
+  assert.ok(problemasDoPasso("classe", trocarClasse(e, "guerreiro")).some((p) => p.includes("estilo de luta")));
+});
+
+test("criação: perícias não podem se repetir entre origens", () => {
+  let e = escolhasIniciais();
+  e = trocarRaca(e, "elfo"); // Percepção concedida
+  e.subRacaId = "altoElfo";
+  e = trocarClasse(e, "patrulheiro"); // escolhe 3, a lista inclui Percepção
+  e.antecedenteId = "acolito"; // Intuição e Religião
+  assert.deepEqual(periciasConcedidas(e).map((p) => p.id).sort(), ["intuicao", "percepcao", "religiao"]);
+  const bloqueadas = periciasBloqueadas(e, "classe");
+  assert.ok(bloqueadas.has("percepcao") && bloqueadas.has("intuicao"));
+  e.periciasClasse = ["atletismo", "natureza", "percepcao"];
+  assert.ok(problemasDoPasso("pericias", e).some((p) => p.includes("Percepção não pode")));
+  e.periciasClasse = ["atletismo", "natureza", "furtividade"];
+  assert.deepEqual(problemasDoPasso("pericias", e), []);
+  assert.equal(periciasProficientes(e).length, 6);
+  e.periciasClasse = ["atletismo"];
+  assert.ok(problemasDoPasso("pericias", e).some((p) => p.includes("escolha 3")));
+});
+
+test("criação: trocar de raça ou classe limpa as escolhas dependentes", () => {
+  let e = escolhasIniciais();
+  e = trocarRaca(e, "meioElfo");
+  e.bonusLivres = ["des", "con"];
+  e.idiomasRaca = ["Anão"];
+  e.periciasRaca = ["persuasao", "enganacao"];
+  e = trocarRaca(e, "humano");
+  assert.deepEqual(e.bonusLivres, []);
+  assert.deepEqual(e.periciasRaca, []);
+  assert.deepEqual(e.idiomasRaca, []);
+  // as escolhas antigas não vazam para a ficha
+  assert.equal(periciasProficientes(e).length, 0);
+
+  e = trocarClasse(e, "ladino");
+  e.periciasClasse = ["furtividade", "acrobacia", "atletismo", "percepcao"];
+  e.especializacao = ["furtividade", "acrobacia"];
+  e = trocarClasse(e, "mago");
+  assert.deepEqual(e.periciasClasse, []);
+  assert.deepEqual(e.especializacao, []);
+  assert.equal(trocarClasse(e, "mago"), e);
+});
+
+test("criação: raça, classe e antecedente personalizados", () => {
+  let e = escolhasIniciais();
+  e = trocarRaca(e, PERSONALIZADA);
+  assert.ok(problemasDoPasso("raca", e).some((p) => p.includes("nome")));
+  e.racaPersonalizada = {
+    nome: "Aasimar",
+    deslocamento: 9,
+    idiomas: "Comum, Celestial",
+    bonus: { for: 0, des: 0, con: 0, int: 0, sab: 1, car: 2 },
+    tracos: "Resistência Celestial: resistência a dano necrótico e radiante.",
+  };
+  assert.deepEqual(problemasDoPasso("raca", e), []);
+
+  e = trocarClasse(e, PERSONALIZADA);
+  e.classePersonalizada = { nome: "Artífice", dadoDeVida: 8, resistencias: ["con", "int"], quantidadePericias: 2 };
+  assert.deepEqual(problemasDoPasso("classe", e), []);
+  e.classePersonalizada.resistencias = ["con", "con"];
+  assert.ok(problemasDoPasso("classe", e).some((p) => p.includes("duas resistências")));
+  e.classePersonalizada.resistencias = ["con", "int"];
+  e.periciasClasse = ["arcanismo", "investigacao"];
+
+  e.antecedenteId = PERSONALIZADA;
+  e.antecedentePersonalizado = { nome: "Soldado", pericias: ["atletismo", "intimidacao"] };
+  assert.deepEqual(problemasDoPasso("antecedente", e), []);
+  assert.equal(gruposDePericias(e).length, 2);
+  assert.deepEqual(problemasDoPasso("pericias", e), []);
+  e.atributosBase = { for: 10, des: 10, con: 14, int: 15, sab: 10, car: 10 };
+
+  const f = montarFicha(e, idsDeTeste);
+  assert.equal(f.dados.raca, "Aasimar");
+  assert.equal(f.dados.classe, "Artífice");
+  assert.equal(f.dados.antecedente, "Soldado");
+  assert.equal(f.dados.atributos.car, 12);
+  assert.deepEqual(f.dados.idiomas, ["Comum", "Celestial"]);
+  assert.equal(f.dados.vida.maximo, 8 + 2);
+  assert.ok(f.dados.habilidades.some((h) => h.nome === "Traços da Raça" && h.origem === "Aasimar"));
+  for (const id of ["arcanismo", "investigacao", "atletismo", "intimidacao"]) assert.equal(f.dados.proficiencia.pericias[id], 1);
+});
+
+test("criação: atributos fora do limite são recusados e vida mínima é 1", () => {
+  const e = guerreiroAnaoDaColina();
+  e.atributosBase.for = 25;
+  assert.ok(problemasDoPasso("atributos", e).some((p) => p.includes("Força")));
+  e.atributosBase.for = 15;
+  assert.deepEqual(problemasDoPasso("atributos", e), []);
+  let fraco = trocarClasse(escolhasIniciais(), "mago");
+  fraco.atributosBase.con = 1; // -5
+  assert.equal(previa(fraco).vidaMaxima, 1);
+});

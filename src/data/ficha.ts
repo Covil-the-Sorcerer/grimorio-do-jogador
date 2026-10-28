@@ -64,6 +64,12 @@ function numero(valor: unknown, padrao: number, minimo: number, maximo: number):
   return Math.min(maximo, Math.max(minimo, Math.trunc(valor)));
 }
 
+// Número com no máximo meio ponto de precisão (ex.: 7,5 m de deslocamento).
+function meioPasso(valor: unknown, padrao: number, minimo: number, maximo: number): number {
+  if (typeof valor !== "number" || !Number.isFinite(valor)) return padrao;
+  return Math.min(maximo, Math.max(minimo, Math.round(valor * 2) / 2));
+}
+
 function registro(valor: unknown): Record<string, unknown> {
   return typeof valor === "object" && valor !== null && !Array.isArray(valor)
     ? (valor as Record<string, unknown>)
@@ -169,6 +175,8 @@ export function normalizarFicha(bruto: unknown, idDoArquivo: string): Ficha {
   const vida = registro(d.vida);
   const pers = registro(d.personagem);
   const outras = registro(d.outrasProficiencias);
+  const origem = registro(d.origem);
+  const defesa = registro(d.defesaSemArmadura);
 
   return {
     id: idDoArquivo,
@@ -195,7 +203,7 @@ export function normalizarFicha(bruto: unknown, idDoArquivo: string): Ficha {
         maximo: numero(vida.maximo, padrao.vida.maximo, 0, 9999),
         temporario: numero(vida.temporario, 0, 0, 9999),
       },
-      deslocamento: numero(d.deslocamento, padrao.deslocamento, 0, 999),
+      deslocamento: meioPasso(d.deslocamento, padrao.deslocamento, 0, 999),
       anotacoes: texto(d.anotacoes, ""),
       personagem: {
         tracosPersonalidade: texto(pers.tracosPersonalidade, ""),
@@ -215,6 +223,18 @@ export function normalizarFicha(bruto: unknown, idDoArquivo: string): Ficha {
       idiomas: listaDeTextos(d.idiomas),
       habilidades: listaDeHabilidades(d.habilidades),
       ataques: listaDeAtaques(d.ataques),
+      origem: {
+        racaId: texto(origem.racaId, ""),
+        subRacaId: texto(origem.subRacaId, ""),
+        classeId: texto(origem.classeId, ""),
+        subclasseId: texto(origem.subclasseId, ""),
+        antecedenteId: texto(origem.antecedenteId, ""),
+      },
+      defesaSemArmadura: {
+        barbaro: numero(defesa.barbaro, 0, 0, 1),
+        monge: numero(defesa.monge, 0, 0, 1),
+        draconico: numero(defesa.draconico, 0, 0, 1),
+      },
     },
   };
 }

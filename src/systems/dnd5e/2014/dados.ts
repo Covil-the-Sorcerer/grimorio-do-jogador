@@ -40,5 +40,7 @@ export function dadosVazios(): DadosDnd5e {
     idiomas: [],
     habilidades: [],
     ataques: [],
+    origem: { racaId: "", subRacaId: "", classeId: "", subclasseId: "", antecedenteId: "" },
+    defesaSemArmadura: { barbaro: 0, monge: 0, draconico: 0 },
   };
 }

@@ -27,6 +27,7 @@ export function Fichas() {
   const [lista, setLista] = useState<ListaFichas | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
+  const [escolhendo, setEscolhendo] = useState(false);
   const [criando, setCriando] = useState(false);
   const [aExcluir, setAExcluir] = useState<ResumoFicha | null>(null);
 
@@ -73,7 +74,7 @@ export function Fichas() {
     <section>
       <div className="mb-6 flex items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">{t.fichas.titulo}</h1>
-        <button type="button" className="btn btn-primario" onClick={() => setCriando(true)}>
+        <button type="button" className="btn btn-primario" onClick={() => setEscolhendo(true)}>
           {t.fichas.novaFicha}
         </button>
       </div>
@@ -133,6 +134,32 @@ export function Fichas() {
             </li>
           ))}
         </ul>
+      )}
+
+      {escolhendo && (
+        <Modal titulo={t.fichas.comoCriar} aoFechar={() => setEscolhendo(false)}>
+          <div className="space-y-3">
+            <button
+              type="button"
+              className="w-full rounded-xl border-2 border-destaque bg-superficie2 p-4 text-left"
+              onClick={() => navegar("/criar")}
+            >
+              <div className="font-bold">{t.fichas.guiada}</div>
+              <div className="text-sm text-suave">{t.fichas.guiadaTexto}</div>
+            </button>
+            <button
+              type="button"
+              className="w-full rounded-xl border border-borda bg-superficie p-4 text-left hover:bg-superficie2"
+              onClick={() => {
+                setEscolhendo(false);
+                setCriando(true);
+              }}
+            >
+              <div className="font-bold">{t.fichas.emBranco}</div>
+              <div className="text-sm text-suave">{t.fichas.emBrancoTexto}</div>
+            </button>
+          </div>
+        </Modal>
       )}
 
       {criando && (

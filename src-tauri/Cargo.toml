@@ -1,6 +1,6 @@
 [package]
 name = "grimorio-do-jogador"
-version = "0.4.0"
+version = "0.5.0"
 description = "Fichas de RPG de mesa, 100% no seu aparelho"
 edition = "2021"
 

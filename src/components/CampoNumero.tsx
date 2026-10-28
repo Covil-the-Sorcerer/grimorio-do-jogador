@@ -13,6 +13,7 @@ export function CampoNumero({
   rotulo,
   id,
   className = "",
+  meioPonto = false,
 }: {
   valor: number;
   minimo: number;
@@ -21,6 +22,8 @@ export function CampoNumero({
   rotulo: string;
   id?: string;
   className?: string;
+  /** Aceita números com meio ponto (ex.: 7,5). */
+  meioPonto?: boolean;
 }) {
   const [texto, setTexto] = useState(String(valor));
   const editando = useRef(false);
@@ -35,7 +38,8 @@ export function CampoNumero({
     setTexto(digitado);
     const numero = Number(digitado);
     if (digitado.trim() !== "" && Number.isFinite(numero)) {
-      aoMudar(limitar(Math.trunc(numero), minimo, maximo));
+      const ajustado = meioPonto ? Math.round(numero * 2) / 2 : Math.trunc(numero);
+      aoMudar(limitar(ajustado, minimo, maximo));
     }
   }
 
@@ -48,7 +52,8 @@ export function CampoNumero({
     <input
       id={id}
       type="number"
-      inputMode="numeric"
+      inputMode={meioPonto ? "decimal" : "numeric"}
+      step={meioPonto ? 0.5 : 1}
       aria-label={rotulo}
       min={minimo}
       max={maximo}

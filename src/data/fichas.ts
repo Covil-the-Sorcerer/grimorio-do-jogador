@@ -9,6 +9,7 @@ import {
   type OpcoesNovaFicha,
 } from "./ficha";
 import { lerRetrato, removerRetrato, salvarRetrato } from "./retratos";
+import { montarFicha, problemasDoPasso, type EscolhasCriacao } from "../systems/dnd5e/2014/criacao";
 
 const PASTA = "fichas";
 
@@ -82,6 +83,21 @@ export function salvarFicha(ficha: Ficha): Promise<void> {
 
 export async function criarFicha(opcoes: OpcoesNovaFicha): Promise<Ficha> {
   const ficha = criarFichaVazia(opcoes);
+  await salvarFicha(ficha);
+  return ficha;
+}
+
+/** Cria uma ficha a partir das escolhas da criação guiada. */
+export async function criarFichaGuiada(escolhas: EscolhasCriacao): Promise<Ficha> {
+  const problemas = problemasDoPasso("revisao", escolhas);
+  if (problemas.length > 0) throw new Error(problemas[0]);
+  const montada = montarFicha(escolhas, novoId);
+  const base = criarFichaVazia({
+    nome: montada.nome,
+    versaoRegras: montada.versaoRegras,
+    multiclasse: montada.multiclasse,
+  });
+  const ficha: Ficha = { ...base, dados: montada.dados };
   await salvarFicha(ficha);
   return ficha;
 }

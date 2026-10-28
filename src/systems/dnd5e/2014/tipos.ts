@@ -40,6 +40,22 @@ export interface OutrasProficiencias {
   ferramentas: string[];
 }
 
+/** Escolhas feitas na criação guiada (vazias em fichas em branco). */
+export interface OrigemDaFicha {
+  racaId: string;
+  subRacaId: string;
+  classeId: string;
+  subclasseId: string;
+  antecedenteId: string;
+}
+
+/** 1 liga a regra de CA sem armadura da classe ou da linhagem; 0 desliga. */
+export interface DefesaSemArmadura {
+  barbaro: number;
+  monge: number;
+  draconico: number;
+}
+
 export interface DadosDnd5e {
   jogador: string;
   raca: string;
@@ -66,4 +82,6 @@ export interface DadosDnd5e {
   idiomas: string[];
   habilidades: Habilidade[];
   ataques: Ataque[];
+  origem: OrigemDaFicha;
+  defesaSemArmadura: DefesaSemArmadura;
 }

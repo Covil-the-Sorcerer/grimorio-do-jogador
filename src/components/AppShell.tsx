@@ -10,9 +10,9 @@ import { VERSAO_DO_APP } from "../versao";
 import { t } from "../i18n/pt-BR";
 
 const LINKS = [
-  { to: "/fichas", prefixos: ["/fichas", "/ficha/"], rotulo: t.menu.fichas },
+  { to: "/fichas", prefixos: ["/fichas", "/ficha/", "/criar"], rotulo: t.menu.fichas },
   { to: "/homebrew", prefixos: ["/homebrew"], rotulo: t.menu.homebrew },
-  { to: "/configuracoes", prefixos: ["/configuracoes", "/diagnostico"], rotulo: t.menu.configuracoes },
+  { to: "/configuracoes", prefixos: ["/configuracoes", "/diagnostico", "/sobre"], rotulo: t.menu.configuracoes },
 ];
 
 const TELA_LARGA = "(min-width: 1024px)";
